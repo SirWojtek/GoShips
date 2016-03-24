@@ -1,10 +1,10 @@
 package main
 
 import "fmt"
-import "./objects"
+import "github.com/SirWojtek/GoShips/objects"
 
 func main() {
 	fmt.Println("Hello World!")
-	ship := objects.NewShip(objects.Rect{10, 10, 10, 10})
-	ship.GetDamage(10)
+	gameState := objects.NewGameState()
+	gameState.Paint()
 }

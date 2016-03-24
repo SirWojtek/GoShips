@@ -1,15 +1,15 @@
 package objects
 
 type Ship struct {
-	Rect
+	Object
 	Health
 }
 
 const shipHealth = 100
 
-func NewShip(position Rect) Ship {
+func NewShip(name string, position Rect) Ship {
 	return Ship{
-		Rect:   position,
+		Object: NewObject(name, position),
 		Health: shipHealth,
 	}
 }
