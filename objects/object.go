@@ -7,22 +7,22 @@ type Rect struct {
 	Width, Height float32
 }
 
-type PaintComponent interface {
+type ObjectInterface interface {
 	Paint()
-	AddChild(PaintComponent)
+	AddChild(ObjectInterface)
 }
 
 type Object struct {
 	name string
 	Rect
-	childs []PaintComponent
+	childs []ObjectInterface
 }
 
-func NewObject(name string, r Rect) Object {
-	return Object{
+func NewObject(name string, r Rect) *Object {
+	return &Object{
 		name:   name,
 		Rect:   r,
-		childs: []PaintComponent{},
+		childs: []ObjectInterface{},
 	}
 }
 
@@ -34,8 +34,8 @@ func (obj *Object) Paint() {
 	}
 }
 
-func (obj *Object) AddChild(c PaintComponent) {
-	obj.childs = append(obj.childs, c)
+func (obj *Object) AddChild(o ObjectInterface) {
+	obj.childs = append(obj.childs, o)
 }
 
 func (obj *Object) MoveBy(x, y float32) {
