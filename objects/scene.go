@@ -2,7 +2,7 @@ package objects
 
 type Scene struct {
 	*Object
-	ships []*Ship
+	Ships []*Ship
 }
 
 func NewScene() Scene {
@@ -11,7 +11,7 @@ func NewScene() Scene {
 
 	scene := Scene{
 		Object: NewObject("Scene", Rect{0, 0, 0, 0}),
-		ships:  []*Ship{leftShip, rightShip},
+		Ships:  []*Ship{leftShip, rightShip},
 	}
 
 	scene.AddChild(leftShip)

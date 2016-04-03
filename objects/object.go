@@ -8,6 +8,7 @@ type Rect struct {
 }
 
 type ObjectInterface interface {
+	MoveBy(x, y float32)
 	Paint()
 	AddChild(ObjectInterface)
 }
