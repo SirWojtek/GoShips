@@ -22,7 +22,7 @@ func NewRandomController(obj objects.ObjectInterface) RandomController {
 }
 
 func (controller *RandomController) Tick() {
-	x := controller.random.Float32() * maxX
-	y := controller.random.Float32() * maxY
+	x := 2*controller.random.Float32()*maxX - maxX
+	y := 2*controller.random.Float32()*maxY - maxY
 	controller.object.MoveBy(x, y)
 }
