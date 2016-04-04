@@ -1,13 +1,8 @@
 package main
 
-import "github.com/SirWojtek/GoShips/objects"
-import "github.com/SirWojtek/GoShips/controller"
+import "github.com/SirWojtek/GoShips/game"
 
 func main() {
-	scene := objects.NewScene()
-	controller := controller.NewRandomController(scene.Ships[0])
-
-	scene.Paint()
-	controller.Tick()
-	scene.Paint()
+	game := game.NewGame()
+	game.Start()
 }
