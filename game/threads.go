@@ -7,20 +7,35 @@ import (
 	"time"
 )
 
-const FPS = 1 / 60
+type Threads struct {
+	mutex   sync.Mutex
+	painted *sync.Cond
+}
 
-func paintLoop(scene objects.ObjectInterface, waitGroup *sync.WaitGroup) {
+const FPS = 1
+
+func NewThreads() Threads {
+	var threads Threads
+	threads.painted = sync.NewCond(&threads.mutex)
+	return threads
+}
+
+func (t *Threads) paintLoop(scene objects.ObjectInterface, waitGroup *sync.WaitGroup) {
 	for {
 		scene.Paint()
-		time.Sleep(FPS * time.Second)
+		time.Sleep(1 / FPS * time.Second)
+		t.painted.Broadcast()
 	}
 
 	waitGroup.Done()
 }
 
-func controllLoop(controller controller.Controller, waitGroup *sync.WaitGroup) {
+func (t *Threads) controllLoop(controller controller.Controller, waitGroup *sync.WaitGroup) {
 	for {
 		controller.Tick()
+		t.painted.L.Lock()
+		t.painted.Wait()
+		t.painted.L.Unlock()
 	}
 
 	waitGroup.Done()

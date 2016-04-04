@@ -27,13 +27,14 @@ func NewGame() Game {
 
 func (game *Game) Start() {
 	var waitGroup sync.WaitGroup
+	threads := NewThreads()
 
 	waitGroup.Add(1)
-	go paintLoop(&game.scene, &waitGroup)
+	go threads.paintLoop(&game.scene, &waitGroup)
 
 	for i := range game.shipControllers {
 		waitGroup.Add(1)
-		go controllLoop(&game.shipControllers[i], &waitGroup)
+		go threads.controllLoop(&game.shipControllers[i], &waitGroup)
 	}
 
 	waitGroup.Wait()
