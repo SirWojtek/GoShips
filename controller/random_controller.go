@@ -21,8 +21,17 @@ func NewRandomController(obj objects.ObjectInterface) RandomController {
 	}
 }
 
-func (controller *RandomController) Tick() {
+func (controller *RandomController) generateMoveDelta() (float32, float32) {
 	x := 2*controller.random.Float32()*maxX - maxX
 	y := 2*controller.random.Float32()*maxY - maxY
+	return x, y
+}
+
+func (controller *RandomController) Tick() {
+	x, y := controller.generateMoveDelta()
+
+	for ; !controller.object.CanMove(x, y); x, y = controller.generateMoveDelta() {
+	}
+
 	controller.object.MoveBy(x, y)
 }

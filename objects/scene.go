@@ -5,12 +5,16 @@ type Scene struct {
 	Ships []*Ship
 }
 
+const sceneWidth = 100
+const sceneHeight = 100
+
 func NewScene() Scene {
-	leftShip := NewShip("LeftShip", Rect{0, 30, 10, 10})
-	rightShip := NewShip("RightShip", Rect{100, 30, 10, 10})
+	sceneBounds := Rect{0, 0, sceneHeight, sceneWidth}
+	leftShip := NewShip("LeftShip", Rect{0, 30, 10, 10}, sceneBounds)
+	rightShip := NewShip("RightShip", Rect{90, 30, 10, 10}, sceneBounds)
 
 	scene := Scene{
-		Object: NewObject("Scene", Rect{0, 0, 0, 0}),
+		Object: NewObject("Scene", sceneBounds, sceneBounds),
 		Ships:  []*Ship{leftShip, rightShip},
 	}
 
@@ -18,6 +22,10 @@ func NewScene() Scene {
 	scene.AddChild(rightShip)
 
 	return scene
+}
+
+func (obj *Scene) CanMove(x, y float32) bool {
+	return false
 }
 
 func (obj *Scene) MoveBy(x, y float32) {
