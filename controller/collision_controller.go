@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/SirWojtek/GoShips/objects"
+	"github.com/fighterlyt/permutation"
 )
 
 type CollisionController struct {
@@ -15,5 +16,4 @@ func NewCollisionController(scene objects.ObjectInterface) *CollisionController 
 }
 
 func (controller *CollisionController) Tick() {
-
 }

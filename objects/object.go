@@ -12,6 +12,9 @@ type ObjectInterface interface {
 	MoveBy(x, y float32)
 	Paint()
 	AddChild(ObjectInterface)
+	GetChilds() []ObjectInterface
+	GetChildsRecursive() []ObjectInterface
+	GetRect() Rect
 }
 
 type Object struct {
@@ -42,6 +45,22 @@ func (obj *Object) AddChild(o ObjectInterface) {
 	obj.childs = append(obj.childs, o)
 }
 
+func (obj *Object) GetChilds() []ObjectInterface {
+	return obj.childs
+}
+
+func (obj *Object) GetChildsRecursive() []ObjectInterface {
+	result := []ObjectInterface{}
+	for _, child := range obj.childs {
+		result = append(result, child.GetChilds()...)
+	}
+	return result
+}
+
+func (obj *Object) GetRect() Rect {
+	return obj.Rect
+}
+
 func (obj *Object) CanMove(x, y float32) bool {
 	newX := obj.X + x
 	newY := obj.Y + y
@@ -58,6 +77,11 @@ func (obj *Object) MoveBy(x, y float32) {
 
 	obj.X += x
 	obj.Y += y
+}
+
+func (obj *Object) CollisionCallback(other *Object) bool {
+	fmt.Println("Collision:\n%v\n%v", obj, other)
+	return true
 }
 
 func (obj *Object) String() string {
