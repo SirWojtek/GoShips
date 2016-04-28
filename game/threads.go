@@ -20,9 +20,23 @@ func NewThreads() Threads {
 	return threads
 }
 
-func (t *Threads) paintLoop(scene objects.ObjectInterface, waitGroup *sync.WaitGroup) {
+func (t *Threads) paintLoop(
+	scene objects.ObjectInterface,
+	prePaintControllers []controller.Controller,
+	postPaintControllers []controller.Controller,
+	waitGroup *sync.WaitGroup) {
 	for {
+		for _, preController := range prePaintControllers {
+			preController.Tick()
+		}
+
 		scene.Paint()
+
+		for _, postController := range postPaintControllers {
+			postController.Tick()
+		}
+
+		// TODO: dynamically compute sleep period (keep const FPS)
 		time.Sleep(1 / FPS * time.Second)
 		t.painted.Broadcast()
 	}
