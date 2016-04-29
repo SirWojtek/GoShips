@@ -31,7 +31,3 @@ func (obj *Scene) CanMove(x, y float32) bool {
 func (obj *Scene) MoveBy(x, y float32) {
 	panic("Scene can not be moved")
 }
-
-//func (obj *Scene) GetAllObjects() []Object {
-
-//}
