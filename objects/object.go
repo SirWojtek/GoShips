@@ -52,7 +52,7 @@ func (obj *Object) GetChilds() []ObjectInterface {
 func (obj *Object) GetChildsRecursive() []ObjectInterface {
 	result := []ObjectInterface{}
 	for _, child := range obj.childs {
-		result = append(result, child.GetChilds()...)
+		result = append(result, child.GetChildsRecursive()...)
 	}
 	return result
 }
