@@ -14,7 +14,9 @@ type ObjectInterface interface {
 	AddChild(ObjectInterface)
 	GetChilds() []ObjectInterface
 	GetChildsRecursive() []ObjectInterface
+	CollisionCallback(ObjectInterface) bool
 	GetRect() Rect
+	GetName() string
 }
 
 type Object struct {
@@ -23,6 +25,12 @@ type Object struct {
 	childs      []ObjectInterface
 	sceneBounds Rect
 }
+
+type ByName []ObjectInterface
+
+func (a ByName) Len() int           { return len(a) }
+func (a ByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByName) Less(i, j int) bool { return a[i].GetName() < a[j].GetName() }
 
 func NewObject(name string, r Rect, bounds Rect) *Object {
 	return &Object{
@@ -61,6 +69,10 @@ func (obj *Object) GetRect() Rect {
 	return obj.Rect
 }
 
+func (obj *Object) GetName() string {
+	return obj.name
+}
+
 func (obj *Object) CanMove(x, y float32) bool {
 	newX := obj.X + x
 	newY := obj.Y + y
@@ -79,7 +91,7 @@ func (obj *Object) MoveBy(x, y float32) {
 	obj.Y += y
 }
 
-func (obj *Object) CollisionCallback(other *Object) bool {
+func (obj *Object) CollisionCallback(other ObjectInterface) bool {
 	fmt.Println("Collision:\n%v\n%v", obj, other)
 	return true
 }
