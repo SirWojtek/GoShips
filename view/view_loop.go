@@ -1,18 +1,25 @@
 package view
 
-import "github.com/rthornton128/goncurses"
+import (
+	"github.com/SirWojtek/GoShips/objects"
+	"github.com/rthornton128/goncurses"
+)
 
 type ViewContext struct {
-	stdscr *goncurses.Window
+	stdscr      *goncurses.Window
+	currentView viewInterface
 }
 
-func NewViewContext() ViewContext {
+func NewViewContext(sc objects.ObjectInterface) ViewContext {
 	scr, err := goncurses.Init()
 	if err != nil {
 		panic("ncurses init failed")
 	}
 	return ViewContext{
 		stdscr: scr,
+		currentView: &gameView{
+			scene: sc,
+		},
 	}
 }
 
@@ -21,6 +28,6 @@ func End() {
 }
 
 func (context ViewContext) ViewLoop() {
-	context.stdscr.Print("Hello World!")
+	context.currentView.paint(context.stdscr)
 	context.stdscr.Refresh()
 }
