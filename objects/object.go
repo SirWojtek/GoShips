@@ -74,7 +74,7 @@ func (obj *Object) GetChilds() []ObjectInterface {
 }
 
 func (obj *Object) GetChildsRecursive() []ObjectInterface {
-	result := []ObjectInterface{}
+	result := obj.childs
 	for _, child := range obj.childs {
 		result = append(result, child.GetChildsRecursive()...)
 	}
