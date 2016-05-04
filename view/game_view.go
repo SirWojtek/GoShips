@@ -10,5 +10,8 @@ type gameView struct {
 }
 
 func (view *gameView) paint(stdscr *goncurses.Window) {
-	stdscr.Print("Hello World!")
+	for _, obj := range view.scene.GetChildsRecursive() {
+		stdscr.Println(obj)
+	}
+
 }
