@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/SirWojtek/GoShips/controller"
 	"github.com/SirWojtek/GoShips/objects"
+	"github.com/SirWojtek/GoShips/view"
 	"sync"
 	"time"
 )
@@ -25,12 +26,17 @@ func (t *Threads) paintLoop(
 	prePaintControllers []controller.Controller,
 	postPaintControllers []controller.Controller,
 	waitGroup *sync.WaitGroup) {
+
+	vc := view.NewViewContext()
+	defer view.End()
+	defer waitGroup.Done()
+
 	for {
 		for _, preController := range prePaintControllers {
 			preController.Tick()
 		}
 
-		scene.Paint()
+		vc.ViewLoop()
 
 		for _, postController := range postPaintControllers {
 			postController.Tick()
@@ -40,8 +46,6 @@ func (t *Threads) paintLoop(
 		time.Sleep(1 / FPS * time.Second)
 		t.painted.Broadcast()
 	}
-
-	waitGroup.Done()
 }
 
 func (t *Threads) controllLoop(controller controller.Controller, waitGroup *sync.WaitGroup) {
