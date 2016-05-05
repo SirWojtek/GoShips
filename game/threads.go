@@ -28,7 +28,7 @@ func (t *Threads) paintLoop(
 	waitGroup *sync.WaitGroup) {
 
 	vc := view.NewViewContext(scene)
-	defer view.End()
+	defer vc.End()
 	defer waitGroup.Done()
 
 	for {

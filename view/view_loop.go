@@ -15,19 +15,24 @@ func NewViewContext(sc objects.ObjectInterface) ViewContext {
 	if err != nil {
 		panic("ncurses init failed")
 	}
+
+	goncurses.Echo(false)
+	goncurses.CBreak(true)
+	goncurses.Cursor(0)
+
 	return ViewContext{
-		stdscr: scr,
-		currentView: &gameView{
-			scene: sc,
-		},
+		stdscr:      scr,
+		currentView: newGameView(sc),
 	}
 }
 
-func End() {
+func (context ViewContext) End() {
+	context.currentView.clean()
 	goncurses.End()
 }
 
 func (context ViewContext) ViewLoop() {
 	context.currentView.paint(context.stdscr)
-	context.stdscr.Refresh()
+	goncurses.Update()
+	//context.stdscr.Refresh()
 }
