@@ -2,6 +2,7 @@ package view
 
 import (
 	"github.com/SirWojtek/GoShips/objects"
+	"github.com/SirWojtek/GoShips/utilities"
 	"github.com/rthornton128/goncurses"
 )
 
@@ -19,6 +20,7 @@ func newGameView(scene objects.ObjectInterface) *gameView {
 
 func (view *gameView) paint(stdscr *goncurses.Window) {
 	for _, obj := range view.scene.GetChildsRecursive() {
+		utilities.Log.Println(obj)
 		view.paintObject(obj)
 	}
 }

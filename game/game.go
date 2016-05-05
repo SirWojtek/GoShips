@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/SirWojtek/GoShips/controller"
 	"github.com/SirWojtek/GoShips/objects"
+	"github.com/SirWojtek/GoShips/utilities"
 	"sync"
 )
 
@@ -32,7 +33,10 @@ func NewGame() Game {
 	return game
 }
 
+const logFile = "log.txt"
+
 func (game *Game) Start() {
+	utilities.Init(logFile)
 	var waitGroup sync.WaitGroup
 	threads := NewThreads()
 
@@ -47,5 +51,6 @@ func (game *Game) Start() {
 		go threads.controllLoop(&game.shipControllers[i], &waitGroup)
 	}
 
+	utilities.Log.Println("Threads started")
 	waitGroup.Wait()
 }
