@@ -31,7 +31,7 @@ func (view *gameView) paintObject(obj objects.ObjectInterface) {
 
 	objWindow.Erase()
 	objWindow.NoutRefresh()
-	objWindow.Move(int(objRect.Y), int(objRect.X))
+	objWindow.MoveWindow(int(objRect.Y), int(objRect.X))
 	objWindow.Box(goncurses.ACS_VLINE, goncurses.ACS_HLINE)
 	objWindow.NoutRefresh()
 }
