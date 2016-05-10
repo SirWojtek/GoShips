@@ -1,6 +1,9 @@
 package objects
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/SirWojtek/GoShips/utilities"
+)
 
 type Rect struct {
 	X, Y          float32
@@ -10,8 +13,6 @@ type Rect struct {
 type ObjectInterface interface {
 	CanMove(x, y float32) bool
 	MoveBy(x, y float32)
-
-	Paint()
 
 	AddChild(ObjectInterface)
 	GetChilds() []ObjectInterface
@@ -57,14 +58,6 @@ func (obj *Object) MoveBy(x, y float32) {
 	obj.Y += y
 }
 
-func (obj *Object) Paint() {
-	// TODO: implement paint
-	fmt.Println(obj)
-	for _, child := range obj.childs {
-		child.Paint()
-	}
-}
-
 func (obj *Object) AddChild(o ObjectInterface) {
 	obj.childs = append(obj.childs, o)
 }
@@ -90,7 +83,7 @@ func (obj *Object) GetName() string {
 }
 
 func (obj *Object) CollisionCallback(other ObjectInterface) bool {
-	fmt.Println("Collision:\n%v\n%v", obj, other)
+	utilities.Log.Println("Collision:\n%v\n%v", obj, other)
 	return true
 }
 
