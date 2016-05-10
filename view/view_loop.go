@@ -22,7 +22,7 @@ func NewViewContext(sc objects.ObjectInterface) ViewContext {
 
 	return ViewContext{
 		stdscr:      scr,
-		currentView: newGameView(sc),
+		currentView: newGameView(sc, scr),
 	}
 }
 

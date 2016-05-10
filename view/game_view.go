@@ -8,32 +8,45 @@ import (
 
 type gameView struct {
 	scene             objects.ObjectInterface
+	scaleX, scaleY    float32
 	objectToWindowMap map[string]*goncurses.Window
 }
 
-func newGameView(scene objects.ObjectInterface) *gameView {
+func newGameView(scene objects.ObjectInterface, stdscr *goncurses.Window) *gameView {
+	sceneRect := scene.GetRect()
+	screenMaxY, screenMaxX := stdscr.MaxYX()
+
+	utilities.Log.Printf("Screen size: %d %d\n", screenMaxX, screenMaxY)
+	utilities.Log.Printf("Scene size: %f %f\n", sceneRect.Width, sceneRect.Height)
+
 	return &gameView{
 		scene:             scene,
+		scaleX:            float32(screenMaxX) / sceneRect.Width,
+		scaleY:            float32(screenMaxY) / sceneRect.Height,
 		objectToWindowMap: map[string]*goncurses.Window{},
 	}
 }
 
 func (view *gameView) paint(stdscr *goncurses.Window) {
 	for _, obj := range view.scene.GetChildsRecursive() {
-		utilities.Log.Println(obj)
-		view.paintObject(obj)
+		view.paintObject(obj, stdscr)
 	}
 }
 
-func (view *gameView) paintObject(obj objects.ObjectInterface) {
+func (view *gameView) paintObject(obj objects.ObjectInterface, stdscr *goncurses.Window) {
 	objRect := obj.GetRect()
-	objWindow := view.getOrCreateObjectWindow(obj.GetName(), objRect)
+	y, x := view.convertToScreenCoords(objRect)
 
+	objWindow := view.getOrCreateObjectWindow(obj.GetName(), objRect)
 	objWindow.Erase()
 	objWindow.NoutRefresh()
-	objWindow.MoveWindow(int(objRect.Y), int(objRect.X))
+	objWindow.MoveWindow(y, x)
 	objWindow.Box(goncurses.ACS_VLINE, goncurses.ACS_HLINE)
 	objWindow.NoutRefresh()
+}
+
+func (view *gameView) convertToScreenCoords(rect objects.Rect) (int, int) {
+	return int(rect.Y * view.scaleY), int(rect.X * view.scaleX)
 }
 
 func (view *gameView) getOrCreateObjectWindow(name string, rect objects.Rect) *goncurses.Window {
@@ -49,18 +62,17 @@ func (view *gameView) getOrCreateObjectWindow(name string, rect objects.Rect) *g
 	return window
 }
 
-func createObjectWindow(rect objects.Rect) *goncurses.Window {
-	win, err := goncurses.NewWindow(
-		int(rect.Height), int(rect.Width),
-		int(rect.Y), int(rect.X))
-	if err != nil {
-		panic("Cannot create window")
-	}
-	return win
-}
-
 func (view *gameView) clean() {
 	for _, window := range view.objectToWindowMap {
 		window.Delete()
 	}
+}
+
+func createObjectWindow(rect objects.Rect) *goncurses.Window {
+	win, err := goncurses.NewWindow(
+		int(rect.Height), int(rect.Width), 0, 0)
+	if err != nil {
+		panic("Cannot create window")
+	}
+	return win
 }
