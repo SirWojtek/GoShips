@@ -3,6 +3,7 @@ package objects
 import (
 	"fmt"
 	"github.com/SirWojtek/GoShips/utilities"
+	"sync"
 )
 
 type Rect struct {
@@ -25,27 +26,33 @@ type ObjectInterface interface {
 }
 
 type Object struct {
-	name string
 	Rect
+	sync.RWMutex
+	name        string
 	childs      []ObjectInterface
 	sceneBounds Rect
 }
 
 func NewObject(name string, r Rect, bounds Rect) *Object {
 	return &Object{
-		name:        name,
 		Rect:        r,
+		name:        name,
 		childs:      []ObjectInterface{},
 		sceneBounds: bounds,
 	}
 }
 
 func (obj *Object) CanMove(x, y float32) bool {
+	obj.RLock()
+	defer obj.RUnlock()
+
 	newX := obj.X + x
+	newMaxX := newX + obj.Width
 	newY := obj.Y + y
-	return newX <= obj.sceneBounds.Width &&
+	newMaxY := newY + obj.Height
+	return newMaxX <= obj.sceneBounds.X+obj.sceneBounds.Width &&
 		newX >= obj.sceneBounds.X &&
-		newY <= obj.sceneBounds.Height &&
+		newMaxY <= obj.sceneBounds.Y+obj.sceneBounds.Height &&
 		newY >= obj.sceneBounds.Y
 }
 
@@ -53,22 +60,32 @@ func (obj *Object) MoveBy(x, y float32) {
 	if !obj.CanMove(x, y) {
 		panic(obj.name + " goes out of bounds")
 	}
-
+	obj.Lock()
 	obj.X += x
 	obj.Y += y
+	obj.Unlock()
 
 	utilities.Log.Println(obj)
 }
 
 func (obj *Object) AddChild(o ObjectInterface) {
+	obj.Lock()
+	defer obj.Unlock()
+
 	obj.childs = append(obj.childs, o)
 }
 
 func (obj *Object) GetChilds() []ObjectInterface {
+	obj.RLock()
+	defer obj.RUnlock()
+
 	return obj.childs
 }
 
 func (obj *Object) GetChildsRecursive() []ObjectInterface {
+	obj.RLock()
+	defer obj.RUnlock()
+
 	result := obj.childs
 	for _, child := range obj.childs {
 		result = append(result, child.GetChildsRecursive()...)
@@ -77,19 +94,31 @@ func (obj *Object) GetChildsRecursive() []ObjectInterface {
 }
 
 func (obj *Object) GetRect() Rect {
+	obj.RLock()
+	defer obj.RUnlock()
+
 	return obj.Rect
 }
 
 func (obj *Object) GetName() string {
+	obj.RLock()
+	defer obj.RUnlock()
+
 	return obj.name
 }
 
 func (obj *Object) CollisionCallback(other ObjectInterface) bool {
+	obj.RLock()
+	defer obj.RUnlock()
+
 	utilities.Log.Println("Collision:\n%v\n%v", obj, other)
 	return true
 }
 
 func (obj *Object) String() string {
+	obj.RLock()
+	defer obj.RUnlock()
+
 	return fmt.Sprintf("%s: %+v", obj.name, obj.Rect)
 }
 
