@@ -40,17 +40,23 @@ func (view *gameView) getOrCreateObjectWindow(name string, rect objects.Rect) *g
 	window, exist := view.objectToWindowMap[name]
 
 	if !exist {
-		win, err := goncurses.NewWindow(
-			int(rect.Height), int(rect.Width),
-			int(rect.Y), int(rect.X))
-		if err != nil {
-			panic("Cannot create window for " + name)
-		}
+		win := createObjectWindow(rect)
+		utilities.Log.Println("Created window for: " + name)
 		view.objectToWindowMap[name] = win
 		window = win
 	}
 
 	return window
+}
+
+func createObjectWindow(rect objects.Rect) *goncurses.Window {
+	win, err := goncurses.NewWindow(
+		int(rect.Height), int(rect.Width),
+		int(rect.Y), int(rect.X))
+	if err != nil {
+		panic("Cannot create window")
+	}
+	return win
 }
 
 func (view *gameView) clean() {
