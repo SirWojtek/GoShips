@@ -13,3 +13,10 @@ func NewShip(name string, position Rect, color Color, sceneBounds Rect) *Ship {
 		Health: shipHealth,
 	}
 }
+
+func (ship *Ship) Shoot() {
+	ship.AddChild(NewMissile(
+		ship.Rect.X+ship.Rect.Width/2,
+		ship.Rect.Y+ship.Rect.Height/2,
+		ship.sceneBounds))
+}
