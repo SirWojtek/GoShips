@@ -30,6 +30,9 @@ func NewGame() Game {
 	game.prePaintControllers = append(game.prePaintControllers,
 		controller.NewCollisionController(&game.scene))
 
+	game.prePaintControllers = append(game.prePaintControllers,
+		controller.NewPreGameController(game.scene.Ships[0], game.scene.Ships[1]))
+
 	return game
 }
 
