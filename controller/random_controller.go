@@ -7,16 +7,16 @@ import (
 )
 
 type RandomController struct {
-	object objects.ObjectInterface
+	ship   *objects.Ship
 	random *rand.Rand
 }
 
 const maxX = 10
 const maxY = 10
 
-func NewRandomController(obj objects.ObjectInterface) RandomController {
+func NewRandomController(obj *objects.Ship) RandomController {
 	return RandomController{
-		object: obj,
+		ship:   obj,
 		random: rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 }
@@ -30,8 +30,12 @@ func (controller *RandomController) generateMoveDelta() (float32, float32) {
 func (controller *RandomController) Tick() {
 	x, y := controller.generateMoveDelta()
 
-	for ; !controller.object.CanMove(x, y); x, y = controller.generateMoveDelta() {
+	for ; !controller.ship.CanMove(x, y); x, y = controller.generateMoveDelta() {
 	}
 
-	controller.object.MoveBy(x, y)
+	if int(x)%3 != 0 {
+		controller.ship.MoveBy(x, y)
+	} else {
+		controller.ship.Shoot()
+	}
 }
