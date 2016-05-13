@@ -11,6 +11,19 @@ type Rect struct {
 	Width, Height float32
 }
 
+type Color int8
+
+const (
+	Black Color = iota
+	Blue
+	Cyan
+	Green
+	Magenta
+	Red
+	White
+	Yellow
+)
+
 type ObjectInterface interface {
 	CanMove(x, y float32) bool
 	MoveBy(x, y float32)
@@ -21,21 +34,24 @@ type ObjectInterface interface {
 
 	GetRect() Rect
 	GetName() string
+	GetColor() Color
 
 	CollisionCallback(ObjectInterface) bool
 }
 
 type Object struct {
 	Rect
+	Color
 	sync.RWMutex
 	name        string
 	childs      []ObjectInterface
 	sceneBounds Rect
 }
 
-func NewObject(name string, r Rect, bounds Rect) *Object {
+func NewObject(name string, r Rect, c Color, bounds Rect) *Object {
 	return &Object{
 		Rect:        r,
+		Color:       c,
 		name:        name,
 		childs:      []ObjectInterface{},
 		sceneBounds: bounds,
@@ -105,6 +121,13 @@ func (obj *Object) GetName() string {
 	defer obj.RUnlock()
 
 	return obj.name
+}
+
+func (obj *Object) GetColor() Color {
+	obj.RLock()
+	defer obj.RUnlock()
+
+	return obj.Color
 }
 
 func (obj *Object) CollisionCallback(other ObjectInterface) bool {

@@ -7,9 +7,9 @@ type Ship struct {
 
 const shipHealth = 100
 
-func NewShip(name string, position Rect, sceneBounds Rect) *Ship {
+func NewShip(name string, position Rect, color Color, sceneBounds Rect) *Ship {
 	return &Ship{
-		Object: NewObject(name, position, sceneBounds),
+		Object: NewObject(name, position, color, sceneBounds),
 		Health: shipHealth,
 	}
 }

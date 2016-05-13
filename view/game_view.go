@@ -6,10 +6,26 @@ import (
 	"github.com/rthornton128/goncurses"
 )
 
+var colorMap = map[objects.Color]int16{
+	objects.Black:   goncurses.C_BLACK,
+	objects.Blue:    goncurses.C_BLUE,
+	objects.Cyan:    goncurses.C_CYAN,
+	objects.Green:   goncurses.C_GREEN,
+	objects.Magenta: goncurses.C_MAGENTA,
+	objects.Red:     goncurses.C_RED,
+	objects.White:   goncurses.C_WHITE,
+	objects.Yellow:  goncurses.C_YELLOW,
+}
+
+type objData struct {
+	window     *goncurses.Window
+	colorIndex int16
+}
+
 type gameView struct {
 	scene             objects.ObjectInterface
 	scaleX, scaleY    float32
-	objectToWindowMap map[string]*goncurses.Window
+	objectToWindowMap map[string]objData
 }
 
 func newGameView(scene objects.ObjectInterface, stdscr *goncurses.Window) *gameView {
@@ -23,7 +39,7 @@ func newGameView(scene objects.ObjectInterface, stdscr *goncurses.Window) *gameV
 		scene:             scene,
 		scaleX:            float32(screenMaxX) / sceneRect.Width,
 		scaleY:            float32(screenMaxY) / sceneRect.Height,
-		objectToWindowMap: map[string]*goncurses.Window{},
+		objectToWindowMap: map[string]objData{},
 	}
 }
 
@@ -34,45 +50,41 @@ func (view *gameView) paint(stdscr *goncurses.Window) {
 }
 
 func (view *gameView) paintObject(obj objects.ObjectInterface, stdscr *goncurses.Window) {
-	objRect := obj.GetRect()
-	y, x := view.convertToScreenCoords(objRect)
+	y, x := view.convertToScreenCoords(obj.GetRect())
 
-	objWindow := view.getOrCreateObjectWindow(obj.GetName(), objRect)
-	objWindow.Erase()
-	objWindow.NoutRefresh()
-	objWindow.MoveWindow(y, x)
-	objWindow.Box(goncurses.ACS_VLINE, goncurses.ACS_HLINE)
-	objWindow.NoutRefresh()
+	objData := view.getOrCreateObjectWindow(obj, stdscr)
+	objData.window.Erase()
+	objData.window.MoveWindow(y, x)
+	objData.window.Box(goncurses.ACS_VLINE, goncurses.ACS_HLINE)
+	objData.window.NoutRefresh()
 }
 
 func (view *gameView) convertToScreenCoords(rect objects.Rect) (int, int) {
 	return int(rect.Y * view.scaleY), int(rect.X * view.scaleX)
 }
 
-func (view *gameView) getOrCreateObjectWindow(name string, rect objects.Rect) *goncurses.Window {
-	window, exist := view.objectToWindowMap[name]
+func (view *gameView) getOrCreateObjectWindow(obj objects.ObjectInterface, stdscr *goncurses.Window) objData {
+	data, exist := view.objectToWindowMap[obj.GetName()]
+	rect := obj.GetRect()
 
 	if !exist {
-		win := createObjectWindow(rect)
-		utilities.Log.Println("Created window for: " + name)
-		view.objectToWindowMap[name] = win
-		window = win
+		win := stdscr.Sub(
+			int(rect.Height), int(rect.Width), 0, 0)
+		utilities.Log.Println("Created window for: " + obj.GetName())
+
+		colorIndex := int16(len(view.objectToWindowMap) + 1)
+		goncurses.InitPair(colorIndex, goncurses.C_WHITE, colorMap[obj.GetColor()])
+		win.SetBackground(goncurses.ColorPair(colorIndex))
+
+		data = objData{win, colorIndex}
+		view.objectToWindowMap[obj.GetName()] = data
 	}
 
-	return window
+	return data
 }
 
 func (view *gameView) clean() {
-	for _, window := range view.objectToWindowMap {
-		window.Delete()
+	for _, data := range view.objectToWindowMap {
+		data.window.Delete()
 	}
-}
-
-func createObjectWindow(rect objects.Rect) *goncurses.Window {
-	win, err := goncurses.NewWindow(
-		int(rect.Height), int(rect.Width), 0, 0)
-	if err != nil {
-		panic("Cannot create window")
-	}
-	return win
 }

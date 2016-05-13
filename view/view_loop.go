@@ -19,6 +19,9 @@ func NewViewContext(sc objects.ObjectInterface) ViewContext {
 	goncurses.Echo(false)
 	goncurses.CBreak(true)
 	goncurses.Cursor(0)
+	if err := goncurses.StartColor(); err != nil {
+		panic("Color can not be enabled")
+	}
 
 	return ViewContext{
 		stdscr:      scr,
@@ -32,7 +35,8 @@ func (context ViewContext) End() {
 }
 
 func (context ViewContext) ViewLoop() {
+	context.stdscr.Erase()
+	context.stdscr.NoutRefresh()
 	context.currentView.paint(context.stdscr)
 	goncurses.Update()
-	//context.stdscr.Refresh()
 }
