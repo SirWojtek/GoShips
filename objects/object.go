@@ -31,6 +31,11 @@ type ObjectInterface interface {
 	AddChild(ObjectInterface)
 	GetChilds() []ObjectInterface
 	GetChildsRecursive() []ObjectInterface
+	DeleteChild(ObjectInterface)
+	Delete()
+
+	GetParent() ObjectInterface
+	SetParent(ObjectInterface)
 
 	GetRect() Rect
 	GetName() string
@@ -45,6 +50,7 @@ type Object struct {
 	sync.RWMutex
 	name        string
 	childs      []ObjectInterface
+	parent      ObjectInterface
 	sceneBounds Rect
 }
 
@@ -88,6 +94,7 @@ func (obj *Object) AddChild(o ObjectInterface) {
 	obj.Lock()
 	defer obj.Unlock()
 
+	o.SetParent(obj)
 	obj.childs = append(obj.childs, o)
 }
 
@@ -107,6 +114,32 @@ func (obj *Object) GetChildsRecursive() []ObjectInterface {
 		result = append(result, child.GetChildsRecursive()...)
 	}
 	return result
+}
+
+func (obj *Object) DeleteChild(childToDelete ObjectInterface) {
+	for i, child := range obj.childs {
+		if child.GetName() == childToDelete.GetName() {
+			obj.childs = append(obj.childs[:i], obj.childs[:i+1]...)
+		}
+	}
+}
+
+func (obj *Object) Delete() {
+	obj.GetParent().DeleteChild(obj)
+}
+
+func (obj *Object) GetParent() ObjectInterface {
+	obj.RLock()
+	defer obj.RUnlock()
+
+	return obj.parent
+}
+
+func (obj *Object) SetParent(p ObjectInterface) {
+	obj.Lock()
+	defer obj.Unlock()
+
+	obj.parent = p
 }
 
 func (obj *Object) GetRect() Rect {
