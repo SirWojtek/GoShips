@@ -8,7 +8,8 @@ import (
 var Log *log.Logger
 
 func Init(logFile string) {
-	file, err := os.OpenFile(logFile, os.O_RDWR|os.O_CREATE, 0666)
+	os.Remove(logFile)
+	file, err := os.OpenFile(logFile, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		panic("Cannot open " + logFile + " for log")
 	}
