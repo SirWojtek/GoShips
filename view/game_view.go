@@ -44,8 +44,31 @@ func newGameView(scene objects.ObjectInterface, stdscr *goncurses.Window) *gameV
 }
 
 func (view *gameView) paint(stdscr *goncurses.Window) {
-	for _, obj := range view.scene.GetChildsRecursive() {
+	paintObjects := view.scene.GetChildsRecursive()
+
+	if len(paintObjects) < len(view.objectToWindowMap) {
+		view.removeUnusedWindows(paintObjects)
+	}
+
+	for _, obj := range paintObjects {
 		view.paintObject(obj, stdscr)
+	}
+}
+
+func (view *gameView) removeUnusedWindows(objList []objects.ObjectInterface) {
+	for key, _ := range view.objectToWindowMap {
+		found := false
+		for _, obj := range objList {
+			if obj.GetName() == key {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			utilities.Log.Println("Removed window for: " + key)
+			delete(view.objectToWindowMap, key)
+		}
 	}
 }
 
