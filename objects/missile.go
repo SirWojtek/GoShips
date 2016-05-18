@@ -1,6 +1,9 @@
 package objects
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Missile struct {
 	*Object
@@ -13,7 +16,7 @@ const missilePrefix = "missile"
 func NewMissile(x, y float32, sceneBounds Rect) *Missile {
 	number++
 	return &Missile{
-		Object: NewObject(missilePrefix+string(number), Rect{x, y, 1, 1}, White, sceneBounds),
+		Object: NewObject(fmt.Sprintf("%s%d", missilePrefix, number), Rect{x, y, 1, 1}, White, sceneBounds),
 	}
 }
 
