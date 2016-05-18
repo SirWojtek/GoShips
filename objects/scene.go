@@ -10,8 +10,8 @@ const sceneHeight = 100
 
 func NewScene() Scene {
 	sceneBounds := Rect{0, 0, sceneHeight, sceneWidth}
-	leftShip := NewShip("LeftShip", Rect{0, 30, 5, 5}, Red, sceneBounds)
-	rightShip := NewShip("RightShip", Rect{90, 30, 5, 5}, Blue, sceneBounds)
+	leftShip := NewShip("LeftShip", Rect{0, 30, 5, 5}, Red, sceneBounds, true)
+	rightShip := NewShip("RightShip", Rect{90, 30, 5, 5}, Blue, sceneBounds, false)
 
 	scene := Scene{
 		Object: NewObject("Scene", sceneBounds, Black, sceneBounds),
