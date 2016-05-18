@@ -119,7 +119,7 @@ func (obj *Object) GetChildsRecursive() []ObjectInterface {
 func (obj *Object) DeleteChild(childToDelete ObjectInterface) {
 	for i, child := range obj.childs {
 		if child.GetName() == childToDelete.GetName() {
-			obj.childs = append(obj.childs[:i], obj.childs[:i+1]...)
+			obj.childs = append(obj.childs[:i], obj.childs[i+1:]...)
 		}
 	}
 }
@@ -167,7 +167,7 @@ func (obj *Object) CollisionCallback(other ObjectInterface) bool {
 	obj.RLock()
 	defer obj.RUnlock()
 
-	utilities.Log.Println("Collision:\n%v\n%v", obj, other)
+	utilities.Log.Println("Collision: ", obj, other)
 	return true
 }
 
