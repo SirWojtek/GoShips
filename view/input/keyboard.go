@@ -1,4 +1,4 @@
-package input
+package view
 
 import (
 	"github.com/rthornton128/goncurses"
@@ -47,11 +47,11 @@ var keyMap = map[goncurses.Key]Key{
 	'q':                 Quit,
 }
 
-type Keyboard struct {
+type aaaaKeyboard struct {
 	stdscr *goncurses.Window
 }
 
-func NewKeyboard(stdscr *goncurses.Window) Keyboard {
+func newKeyboard(stdscr *goncurses.Window) Keyboard {
 	stdscr.Keypad(true)
 	stdscr.Timeout(0)
 	return Keyboard{stdscr}

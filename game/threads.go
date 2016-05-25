@@ -25,10 +25,10 @@ func NewThreads() Threads {
 func (t *Threads) paintLoop(
 	scene objects.ObjectInterface,
 	prePaintControllers []controller.Controller,
+	vc view.ViewContext,
 	postPaintControllers []controller.Controller,
 	waitGroup *sync.WaitGroup) {
 
-	vc := view.NewViewContext(scene)
 	defer vc.End()
 	defer waitGroup.Done()
 

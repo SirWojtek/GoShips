@@ -8,6 +8,7 @@ import (
 type ViewContext struct {
 	stdscr      *goncurses.Window
 	currentView viewInterface
+	keyboard    Keyboard
 }
 
 func NewViewContext(sc objects.ObjectInterface) ViewContext {
@@ -26,6 +27,7 @@ func NewViewContext(sc objects.ObjectInterface) ViewContext {
 	return ViewContext{
 		stdscr:      scr,
 		currentView: newGameView(sc, scr),
+		keyboard:    newKeyboard(scr),
 	}
 }
 
