@@ -7,12 +7,12 @@ import (
 type Key int8
 
 const (
-	Key None = iota
+	None Key = iota
 	Left
 	Right
 	Up
 	Down
-	Shot
+	Shoot
 	Quit
 )
 
@@ -26,13 +26,18 @@ var keyMap = map[goncurses.Key]Key{
 	goncurses.KEY_EXIT:  Quit,
 }
 
-func InitKeyboard(stdscr *goncurses.Window) {
+type Keyboard struct {
+	stdscr *goncurses.Window
+}
+
+func NewKeyboard(stdscr *goncurses.Window) Keyboard {
 	goncurses.CBreak(false)
 	goncurses.Echo(false)
 	stdscr.Keypad(true)
 	stdscr.Timeout(0)
+	return Keyboard{stdscr}
 }
 
-func GetChar(stdscr *goncurses.Window) Key {
-	return keyMap[stdscr.GetChar()]
+func (keyboard *Keyboard) GetChar() Key {
+	return keyMap[keyboard.stdscr.GetChar()]
 }
