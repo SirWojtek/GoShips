@@ -16,14 +16,35 @@ const (
 	Quit
 )
 
+func (key Key) String() string {
+	switch key {
+	case None:
+		return "None"
+	case Left:
+		return "Left"
+	case Right:
+		return "Right"
+	case Up:
+		return "Up"
+	case Down:
+		return "Down"
+	case Shoot:
+		return "Shoot"
+	case Quit:
+		return "Quit"
+	default:
+		panic("Unrecognized key")
+	}
+}
+
 var keyMap = map[goncurses.Key]Key{
 	0:                   None,
 	goncurses.KEY_LEFT:  Left,
 	goncurses.KEY_RIGHT: Right,
 	goncurses.KEY_UP:    Up,
 	goncurses.KEY_DOWN:  Down,
-	goncurses.KEY_ENTER: Shoot,
-	goncurses.KEY_EXIT:  Quit,
+	' ':                 Shoot,
+	'q':                 Quit,
 }
 
 type Keyboard struct {
@@ -31,8 +52,6 @@ type Keyboard struct {
 }
 
 func NewKeyboard(stdscr *goncurses.Window) Keyboard {
-	goncurses.CBreak(false)
-	goncurses.Echo(false)
 	stdscr.Keypad(true)
 	stdscr.Timeout(0)
 	return Keyboard{stdscr}
