@@ -47,7 +47,7 @@ var keyMap = map[goncurses.Key]Key{
 	'q':                 Quit,
 }
 
-type aaaaKeyboard struct {
+type Keyboard struct {
 	stdscr *goncurses.Window
 }
 

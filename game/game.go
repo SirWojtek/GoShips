@@ -41,7 +41,7 @@ func NewGame() Game {
 	game.prePaintControllers = append(game.prePaintControllers,
 		controller.NewPreGameController(game.scene.Ships[0], game.scene.Ships[1]))
 	game.prePaintControllers = append(game.prePaintControllers,
-		controller.NewKeyboardController(input.NewKeyboard(game.viewContext.Stdscr), game.scene.Ships[0]))
+		controller.NewKeyboardController(game.viewContext.Keyboard, game.scene.Ships[0]))
 
 	return game
 }

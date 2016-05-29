@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/SirWojtek/GoShips/objects"
 	"github.com/SirWojtek/GoShips/utilities"
-	"github.com/SirWojtek/GoShips/view/input"
+	"github.com/SirWojtek/GoShips/view"
 )
 
 const moveStep = 5.0
