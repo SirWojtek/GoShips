@@ -14,6 +14,7 @@ type Game struct {
 	prePaintControllers  []controller.Controller
 	viewContext          view.ViewContext
 	postPaintControllers []controller.Controller
+	exitChannel          chan bool
 }
 
 const logFile = "log.txt"
@@ -25,6 +26,7 @@ func NewGame() Game {
 		shipControllers:      []controller.RandomController{},
 		prePaintControllers:  []controller.Controller{},
 		postPaintControllers: []controller.Controller{},
+		exitChannel:          make(chan bool),
 	}
 	game.viewContext = view.NewViewContext(&game.scene)
 
@@ -41,7 +43,8 @@ func NewGame() Game {
 	game.prePaintControllers = append(game.prePaintControllers,
 		controller.NewPreGameController(game.scene.Ships[0], game.scene.Ships[1]))
 	game.prePaintControllers = append(game.prePaintControllers,
-		controller.NewKeyboardController(game.viewContext.Keyboard, game.scene.Ships[0]))
+		controller.NewKeyboardController(
+			game.viewContext.Keyboard, game.scene.Ships[0], game.exitChannel))
 
 	return game
 }
@@ -51,17 +54,19 @@ func (game *Game) Start() {
 	threads := NewThreads()
 
 	waitGroup.Add(1)
-	go threads.paintLoop(&game.scene,
+	go threads.paintLoop(
 		game.prePaintControllers,
 		game.viewContext,
 		game.postPaintControllers,
-		&waitGroup)
+		&waitGroup,
+		game.exitChannel)
 
 	for i := range game.shipControllers {
 		waitGroup.Add(1)
-		go threads.controllLoop(&game.shipControllers[i], &waitGroup)
+		go threads.controllLoop(&game.shipControllers[i], &waitGroup, game.exitChannel)
 	}
 
 	utilities.Log.Println("Threads started")
 	waitGroup.Wait()
+	utilities.Log.Println("Threads stoped")
 }

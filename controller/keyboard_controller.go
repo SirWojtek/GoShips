@@ -9,14 +9,19 @@ import (
 const moveStep = 5.0
 
 type KeyboardController struct {
-	keyboard view.Keyboard
-	ship     *objects.Ship
+	keyboard    view.Keyboard
+	ship        *objects.Ship
+	exitChannel chan bool
 }
 
-func NewKeyboardController(keyboard view.Keyboard, ship *objects.Ship) *KeyboardController {
+func NewKeyboardController(
+	keyboard view.Keyboard,
+	ship *objects.Ship,
+	exitChannel chan bool) *KeyboardController {
 	return &KeyboardController{
-		keyboard: keyboard,
-		ship:     ship,
+		keyboard:    keyboard,
+		ship:        ship,
+		exitChannel: exitChannel,
 	}
 }
 
@@ -31,6 +36,10 @@ func (controller *KeyboardController) Tick() {
 		controller.moveShip(0, -moveStep)
 	case view.Down:
 		controller.moveShip(0, moveStep)
+	case view.Shoot:
+		controller.ship.Shoot()
+	case view.Quit:
+		close(controller.exitChannel)
 	default:
 		break
 	}
