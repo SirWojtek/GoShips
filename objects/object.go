@@ -86,8 +86,6 @@ func (obj *Object) MoveBy(x, y float32) {
 	obj.X += x
 	obj.Y += y
 	obj.Unlock()
-
-	utilities.Log.Println(obj)
 }
 
 func (obj *Object) AddChild(o ObjectInterface) {
