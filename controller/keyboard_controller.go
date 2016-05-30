@@ -26,22 +26,26 @@ func NewKeyboardController(
 }
 
 func (controller *KeyboardController) Tick() {
-	utilities.Log.Printf("Pressed key: %s", controller.keyboard.GetChar())
-	switch controller.keyboard.GetChar() {
-	case view.Left:
-		controller.moveShip(-moveStep, 0)
-	case view.Right:
-		controller.moveShip(moveStep, 0)
-	case view.Up:
-		controller.moveShip(0, -moveStep)
-	case view.Down:
-		controller.moveShip(0, moveStep)
-	case view.Shoot:
-		controller.ship.Shoot()
-	case view.Quit:
-		close(controller.exitChannel)
+	select {
+	case key := <-controller.keyboard.KeyChannel:
+		utilities.Log.Printf("Pressed key: %s", key)
+		switch key {
+		case view.Left:
+			controller.moveShip(-moveStep, 0)
+		case view.Right:
+			controller.moveShip(moveStep, 0)
+		case view.Up:
+			controller.moveShip(0, -moveStep)
+		case view.Down:
+			controller.moveShip(0, moveStep)
+		case view.Shoot:
+			controller.ship.Shoot()
+		case view.Quit:
+			close(controller.exitChannel)
+		default:
+			break
+		}
 	default:
-		break
 	}
 }
 

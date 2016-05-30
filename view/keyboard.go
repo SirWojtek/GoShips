@@ -48,15 +48,21 @@ var keyMap = map[goncurses.Key]Key{
 }
 
 type Keyboard struct {
-	stdscr *goncurses.Window
+	stdscr     *goncurses.Window
+	KeyChannel chan Key
 }
 
 func newKeyboard(stdscr *goncurses.Window) Keyboard {
 	stdscr.Keypad(true)
-	stdscr.Timeout(0)
-	return Keyboard{stdscr}
+	stdscr.Timeout(-1) // blocking GetChar()
+
+	keyboard := Keyboard{stdscr, make(chan Key)}
+	go keyboard.keyLoop()
+	return keyboard
 }
 
-func (keyboard *Keyboard) GetChar() Key {
-	return keyMap[keyboard.stdscr.GetChar()]
+func (keyboard *Keyboard) keyLoop() {
+	for {
+		keyboard.KeyChannel <- keyMap[keyboard.stdscr.GetChar()]
+	}
 }
