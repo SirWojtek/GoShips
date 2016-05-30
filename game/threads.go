@@ -13,7 +13,7 @@ type Threads struct {
 	painted *sync.Cond
 }
 
-const FPS = 1
+const FPS = 10
 
 func NewThreads() Threads {
 	var threads Threads
@@ -41,9 +41,7 @@ func (t *Threads) paintLoop(
 				preController.Tick()
 			}
 
-			utilities.Log.Println("Before view loop")
 			vc.ViewLoop()
-			utilities.Log.Println("After view loop")
 
 			for _, postController := range postPaintControllers {
 				postController.Tick()

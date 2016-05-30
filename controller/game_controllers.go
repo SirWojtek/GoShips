@@ -10,7 +10,7 @@ type PreGameController struct {
 	rightShip objects.ObjectInterface
 }
 
-const missileVelocity = 3
+const missileVelocity = .0015
 
 func NewPreGameController(left, right objects.ObjectInterface) *PreGameController {
 	return &PreGameController{left, right}

@@ -14,6 +14,8 @@ type RandomController struct {
 const maxX = 10
 const maxY = 10
 
+const sleepPeriod = 100 * time.Millisecond
+
 func NewRandomController(obj *objects.Ship) RandomController {
 	return RandomController{
 		ship:   obj,
@@ -38,4 +40,6 @@ func (controller *RandomController) Tick() {
 	} else {
 		controller.ship.Shoot()
 	}
+
+	time.Sleep(sleepPeriod)
 }
