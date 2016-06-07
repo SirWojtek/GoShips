@@ -9,15 +9,14 @@ import (
 )
 
 type Threads struct {
-	mutex   sync.Mutex
-	painted *sync.Cond
+	painted chan bool
 }
 
 const FPS = 10
 
 func NewThreads() Threads {
 	var threads Threads
-	threads.painted = sync.NewCond(&threads.mutex)
+	threads.painted = make(chan bool)
 	return threads
 }
 
@@ -26,14 +25,16 @@ func (t *Threads) paintLoop(
 	vc view.ViewContext,
 	postPaintControllers []controller.Controller,
 	waitGroup *sync.WaitGroup,
-	exitChannel chan bool) {
+	exitChannel *utilities.BroadcastChannel) {
 
+	exitChannel.AddListener()
 	defer vc.End()
 	defer waitGroup.Done()
+	defer close(t.painted)
 
 	for {
 		select {
-		case exit := <-exitChannel:
+		case exit := <-exitChannel.Out:
 			utilities.Log.Println("View loop exited", exit)
 			return
 		default:
@@ -48,7 +49,7 @@ func (t *Threads) paintLoop(
 			}
 
 			// TODO: dynamically compute sleep period (keep const FPS)
-			t.painted.Broadcast()
+			t.painted <- true
 			time.Sleep(1 / FPS * time.Second)
 		}
 	}
@@ -57,19 +58,20 @@ func (t *Threads) paintLoop(
 func (t *Threads) controllLoop(
 	controller controller.Controller,
 	waitGroup *sync.WaitGroup,
-	exitChannel chan bool) {
+	exitChannel *utilities.BroadcastChannel) {
 
+	exitChannel.AddListener()
 	defer waitGroup.Done()
+
 	for {
 		select {
-		case exit := <-exitChannel:
+		case exit := <-exitChannel.Out:
 			utilities.Log.Println("Control loop exited", exit)
 			return
-		default:
-			controller.Tick()
-			t.painted.L.Lock()
-			t.painted.Wait()
-			t.painted.L.Unlock()
+		case painted := <-t.painted:
+			if painted {
+				controller.Tick()
+			}
 		}
 	}
 }

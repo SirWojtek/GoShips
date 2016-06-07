@@ -11,13 +11,13 @@ const moveStep = 5.0
 type KeyboardController struct {
 	keyboard    view.Keyboard
 	ship        *objects.Ship
-	exitChannel chan bool
+	exitChannel *utilities.BroadcastChannel
 }
 
 func NewKeyboardController(
 	keyboard view.Keyboard,
 	ship *objects.Ship,
-	exitChannel chan bool) *KeyboardController {
+	exitChannel *utilities.BroadcastChannel) *KeyboardController {
 	return &KeyboardController{
 		keyboard:    keyboard,
 		ship:        ship,
@@ -41,7 +41,7 @@ func (controller *KeyboardController) Tick() {
 		case view.Shoot:
 			controller.ship.Shoot()
 		case view.Quit:
-			close(controller.exitChannel)
+			controller.exitChannel.Broadcast(true)
 		default:
 			break
 		}

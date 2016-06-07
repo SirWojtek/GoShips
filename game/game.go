@@ -14,7 +14,7 @@ type Game struct {
 	prePaintControllers  []controller.Controller
 	viewContext          view.ViewContext
 	postPaintControllers []controller.Controller
-	exitChannel          chan bool
+	exitChannel          *utilities.BroadcastChannel
 }
 
 const logFile = "log.txt"
@@ -26,7 +26,7 @@ func NewGame() Game {
 		shipControllers:      []controller.RandomController{},
 		prePaintControllers:  []controller.Controller{},
 		postPaintControllers: []controller.Controller{},
-		exitChannel:          make(chan bool),
+		exitChannel:          utilities.NewBroadcastChannel(),
 	}
 	game.viewContext = view.NewViewContext(&game.scene)
 
@@ -63,7 +63,10 @@ func (game *Game) Start() {
 
 	for i := range game.shipControllers {
 		waitGroup.Add(1)
-		go threads.controllLoop(&game.shipControllers[i], &waitGroup, game.exitChannel)
+		go threads.controllLoop(
+			&game.shipControllers[i],
+			&waitGroup,
+			game.exitChannel)
 	}
 
 	utilities.Log.Println("Threads started")
