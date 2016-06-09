@@ -66,7 +66,6 @@ func (view *gameView) removeUnusedWindows(objList []objects.ObjectInterface) {
 		}
 
 		if !found {
-			utilities.Log.Println("Removed window for: " + key)
 			delete(view.objectToWindowMap, key)
 		}
 	}
@@ -93,7 +92,6 @@ func (view *gameView) getOrCreateObjectWindow(obj objects.ObjectInterface, stdsc
 	if !exist {
 		win := stdscr.Sub(
 			int(rect.Height), int(rect.Width), 0, 0)
-		utilities.Log.Println("Created window for: " + obj.GetName())
 
 		colorIndex := int16(len(view.objectToWindowMap) + 1)
 		goncurses.InitPair(colorIndex, goncurses.C_WHITE, colorMap[obj.GetColor()])

@@ -60,7 +60,7 @@ func (ship *Ship) CollisionCallback(other ObjectInterface) bool {
 	if IsObjectMissile(other) {
 		ship.Health.GetDamage(missileDamage)
 		other.Delete()
-		utilities.Log.Printf("Ship hited for %d", missileDamage)
+		utilities.Log.Printf("%s hited for %d", ship.name, missileDamage)
 	}
 	return true
 }

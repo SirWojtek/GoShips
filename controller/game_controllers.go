@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/SirWojtek/GoShips/objects"
-	"github.com/SirWojtek/GoShips/utilities"
 )
 
 type PreGameController struct {
@@ -35,7 +34,6 @@ func handleMissile(missile objects.ObjectInterface, sign float32) {
 	if missile.CanMove(objects.MissileMovementStep*sign, 0) {
 		missile.MoveBy(objects.MissileMovementStep*sign, 0)
 	} else {
-		utilities.Log.Println("Remove missile: " + missile.GetName())
 		missile.Delete()
 	}
 }

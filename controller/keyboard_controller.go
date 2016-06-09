@@ -26,7 +26,6 @@ func NewKeyboardController(
 func (controller *KeyboardController) Tick() {
 	select {
 	case key := <-controller.keyboard.KeyChannel:
-		utilities.Log.Printf("Pressed key: %s", key)
 		switch key {
 		case view.Left:
 			controller.moveShip(-objects.ShipMovementStep, 0)
