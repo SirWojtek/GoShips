@@ -11,9 +11,6 @@ type RandomController struct {
 	random *rand.Rand
 }
 
-const maxX = 10
-const maxY = 10
-
 const sleepPeriod = 100 * time.Millisecond
 
 func NewRandomController(obj *objects.Ship) RandomController {
@@ -24,8 +21,8 @@ func NewRandomController(obj *objects.Ship) RandomController {
 }
 
 func (controller *RandomController) generateMoveDelta() (float32, float32) {
-	x := 2*controller.random.Float32()*maxX - maxX
-	y := 2*controller.random.Float32()*maxY - maxY
+	x := 2*controller.random.Float32()*objects.ShipMovementStep - objects.ShipMovementStep
+	y := 2*controller.random.Float32()*objects.ShipMovementStep - objects.ShipMovementStep
 	return x, y
 }
 

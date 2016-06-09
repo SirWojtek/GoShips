@@ -12,6 +12,8 @@ type Missile struct {
 var number = 0
 
 const missilePrefix = "missile"
+const missileDamage = 20
+const MissileMovementStep = .005
 
 func NewMissile(x, y float32, sceneBounds Rect) *Missile {
 	number++

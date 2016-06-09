@@ -10,8 +10,6 @@ type PreGameController struct {
 	rightShip objects.ObjectInterface
 }
 
-const missileVelocity = .0015
-
 func NewPreGameController(left, right objects.ObjectInterface) *PreGameController {
 	return &PreGameController{left, right}
 }
@@ -34,8 +32,8 @@ func moveShipMissiles(ship objects.ObjectInterface, sign float32) {
 }
 
 func handleMissile(missile objects.ObjectInterface, sign float32) {
-	if missile.CanMove(missileVelocity*sign, 0) {
-		missile.MoveBy(missileVelocity*sign, 0)
+	if missile.CanMove(objects.MissileMovementStep*sign, 0) {
+		missile.MoveBy(objects.MissileMovementStep*sign, 0)
 	} else {
 		utilities.Log.Println("Remove missile: " + missile.GetName())
 		missile.Delete()

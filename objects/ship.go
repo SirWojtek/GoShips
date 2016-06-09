@@ -1,5 +1,7 @@
 package objects
 
+import "github.com/SirWojtek/GoShips/utilities"
+
 type Ship struct {
 	*Object
 	Health
@@ -7,6 +9,7 @@ type Ship struct {
 }
 
 const shipHealth = 100
+const ShipMovementStep = 1.2
 
 func NewShip(name string, position Rect, color Color, sceneBounds Rect, isTurnedRight bool) *Ship {
 	return &Ship{
@@ -27,4 +30,16 @@ func (ship *Ship) getMissileCoords() (float32, float32) {
 	} else {
 		return ship.Rect.X - ship.Rect.Width, ship.Rect.Y + ship.Rect.Height/2
 	}
+}
+
+func (ship *Ship) CollisionCallback(other ObjectInterface) bool {
+	ship.Object.Lock()
+	defer ship.Object.Unlock()
+
+	if IsObjectMissile(other) {
+		ship.Health.GetDamage(missileDamage)
+		other.Delete()
+		utilities.Log.Printf("Ship hited for %d", missileDamage)
+	}
+	return true
 }

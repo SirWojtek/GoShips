@@ -2,7 +2,7 @@ package objects
 
 import (
 	"fmt"
-	"github.com/SirWojtek/GoShips/utilities"
+	//"github.com/SirWojtek/GoShips/utilities"
 	"sync"
 )
 
@@ -164,8 +164,6 @@ func (obj *Object) GetColor() Color {
 func (obj *Object) CollisionCallback(other ObjectInterface) bool {
 	obj.RLock()
 	defer obj.RUnlock()
-
-	utilities.Log.Println("Collision: ", obj, other)
 	return true
 }
 

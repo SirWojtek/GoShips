@@ -6,8 +6,6 @@ import (
 	"github.com/SirWojtek/GoShips/view"
 )
 
-const moveStep = 5.0
-
 type KeyboardController struct {
 	keyboard    view.Keyboard
 	ship        *objects.Ship
@@ -31,13 +29,13 @@ func (controller *KeyboardController) Tick() {
 		utilities.Log.Printf("Pressed key: %s", key)
 		switch key {
 		case view.Left:
-			controller.moveShip(-moveStep, 0)
+			controller.moveShip(-objects.ShipMovementStep, 0)
 		case view.Right:
-			controller.moveShip(moveStep, 0)
+			controller.moveShip(objects.ShipMovementStep, 0)
 		case view.Up:
-			controller.moveShip(0, -moveStep)
+			controller.moveShip(0, -objects.ShipMovementStep)
 		case view.Down:
-			controller.moveShip(0, moveStep)
+			controller.moveShip(0, objects.ShipMovementStep)
 		case view.Shoot:
 			controller.ship.Shoot()
 		case view.Quit:
