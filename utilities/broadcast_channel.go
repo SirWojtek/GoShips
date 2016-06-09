@@ -17,7 +17,9 @@ func (bc *BroadcastChannel) AddListener() {
 }
 
 func (bc *BroadcastChannel) Broadcast(value bool) {
-	for i := 0; i < bc.listeners; i++ {
-		bc.Out <- value
-	}
+	go func(br *BroadcastChannel) {
+		for i := 0; i < bc.listeners; i++ {
+			bc.Out <- value
+		}
+	}(bc)
 }

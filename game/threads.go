@@ -48,9 +48,12 @@ func (t *Threads) paintLoop(
 				postController.Tick()
 			}
 
-			// TODO: dynamically compute sleep period (keep const FPS)
-			t.painted <- true
-			time.Sleep(1 / FPS * time.Second)
+			select {
+			case t.painted <- true:
+			default:
+				// TODO: dynamically compute sleep period (keep const FPS)
+				time.Sleep(1 / FPS * time.Second)
+			}
 		}
 	}
 }
