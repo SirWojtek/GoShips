@@ -26,7 +26,10 @@ type gameView struct {
 	scene             objects.ObjectInterface
 	scaleX, scaleY    float32
 	objectToWindowMap map[string]objData
+	statusBar         *goncurses.Window
 }
+
+const statusBarHeight = 5
 
 func newGameView(scene objects.ObjectInterface, stdscr *goncurses.Window) *gameView {
 	sceneRect := scene.GetRect()
@@ -40,6 +43,7 @@ func newGameView(scene objects.ObjectInterface, stdscr *goncurses.Window) *gameV
 		scaleX:            float32(screenMaxX) / sceneRect.Width,
 		scaleY:            float32(screenMaxY) / sceneRect.Height,
 		objectToWindowMap: map[string]objData{},
+		statusBar:         stdscr.Sub(statusBarHeight, screenMaxX, screenMaxY-statusBarHeight, 0),
 	}
 }
 
@@ -53,6 +57,8 @@ func (view *gameView) paint(stdscr *goncurses.Window) {
 	for _, obj := range paintObjects {
 		view.paintObject(obj, stdscr)
 	}
+
+	view.paintBar()
 }
 
 func (view *gameView) removeUnusedWindows(objList []objects.ObjectInterface) {
@@ -108,4 +114,11 @@ func (view *gameView) clean() {
 	for _, data := range view.objectToWindowMap {
 		data.window.Delete()
 	}
+}
+
+func (view *gameView) paintBar() {
+	view.statusBar.Erase()
+	view.statusBar.Box(goncurses.ACS_VLINE, goncurses.ACS_HLINE)
+	view.statusBar.Print("aaaaa")
+	view.statusBar.NoutRefresh()
 }
