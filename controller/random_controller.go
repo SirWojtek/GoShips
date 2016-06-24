@@ -12,6 +12,7 @@ type RandomController struct {
 }
 
 const sleepPeriod = 100 * time.Millisecond
+const shootModulo = 10
 
 func NewRandomController(obj *objects.Ship) RandomController {
 	return RandomController{
@@ -27,12 +28,12 @@ func (controller *RandomController) generateMoveDelta() (float32, float32) {
 }
 
 func (controller *RandomController) Tick() {
-	x, y := controller.generateMoveDelta()
+	rand := controller.random.Int()
 
-	for ; !controller.ship.CanMove(x, y); x, y = controller.generateMoveDelta() {
-	}
-
-	if int(x)%3 != 0 {
+	if rand%shootModulo != 0 {
+		x, y := controller.generateMoveDelta()
+		for ; !controller.ship.CanMove(x, y); x, y = controller.generateMoveDelta() {
+		}
 		controller.ship.MoveBy(x, y)
 	} else {
 		controller.ship.Shoot()
