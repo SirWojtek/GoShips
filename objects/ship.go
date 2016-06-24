@@ -10,16 +10,12 @@ type Ship struct {
 	Health
 	IsTurnedRight bool
 	canShoot      bool
-	shootTimer    <-chan time.Time
+	shootTimer    *time.Timer
 }
 
 const shipHealth = 100
 const ShipMovementStep = 1.2
 const shipShootPeriod = 500 // ms
-
-func newShootTimer() <-chan time.Time {
-	return time.After(shipShootPeriod * time.Millisecond)
-}
 
 func NewShip(name string, position Rect, color Color, sceneBounds Rect, isTurnedRight bool) *Ship {
 	return &Ship{
@@ -27,22 +23,20 @@ func NewShip(name string, position Rect, color Color, sceneBounds Rect, isTurned
 		Health:        shipHealth,
 		IsTurnedRight: isTurnedRight,
 		canShoot:      true,
-		shootTimer:    newShootTimer(),
 	}
 }
 
 func (ship *Ship) Shoot() {
-	select {
-	case <-ship.shootTimer:
-		ship.canShoot = true
-	default:
-		if ship.canShoot {
-			x, y := ship.getMissileCoords()
-			ship.AddChild(NewMissile(x, y, ship.sceneBounds))
-			ship.canShoot = false
-			ship.shootTimer = newShootTimer()
-		}
+	if ship.canShoot {
+		x, y := ship.getMissileCoords()
+		ship.AddChild(NewMissile(x, y, ship.sceneBounds))
+		ship.canShoot = false
+		ship.shootTimer = time.AfterFunc(shipShootPeriod*time.Millisecond, ship.resetShoot)
 	}
+}
+
+func (ship *Ship) resetShoot() {
+	ship.canShoot = true
 }
 
 func (ship *Ship) getMissileCoords() (float32, float32) {
