@@ -1,8 +1,12 @@
 package objects
 
 import (
-	"fmt"
 	//"github.com/SirWojtek/GoShips/utilities"
+	"engo.io/ecs"
+	"engo.io/engo"
+	"engo.io/engo/common"
+	"fmt"
+	"image/color"
 	"sync"
 )
 
@@ -10,19 +14,6 @@ type Rect struct {
 	X, Y          float32
 	Width, Height float32
 }
-
-type Color int8
-
-const (
-	Black Color = iota
-	Blue
-	Cyan
-	Green
-	Magenta
-	Red
-	White
-	Yellow
-)
 
 type ObjectInterface interface {
 	CanMove(x, y float32) bool
@@ -37,16 +28,18 @@ type ObjectInterface interface {
 	GetParent() ObjectInterface
 	SetParent(ObjectInterface)
 
-	GetRect() Rect
+	GetBasicEntity() *ecs.BasicEntity
+	GetSpaceComponent() *common.SpaceComponent
+	GetRenderComponent() *common.RenderComponent
 	GetName() string
-	GetColor() Color
 
 	CollisionCallback(ObjectInterface) bool
 }
 
 type Object struct {
-	Rect
-	Color
+	ecs.BasicEntity
+	common.SpaceComponent
+	common.RenderComponent
 	sync.RWMutex
 	name        string
 	childs      []ObjectInterface
@@ -54,10 +47,17 @@ type Object struct {
 	sceneBounds Rect
 }
 
-func NewObject(name string, r Rect, c Color, bounds Rect) *Object {
+func NewObject(name string, r Rect, c color.Gray16, bounds Rect) *Object {
 	return &Object{
-		Rect:        r,
-		Color:       c,
+		SpaceComponent: common.SpaceComponent{
+			Position: engo.Point{r.X, r.Y},
+			Width:    r.Width,
+			Height:   r.Height,
+		},
+		RenderComponent: common.RenderComponent{
+			Drawable: common.Rectangle{},
+			Color:    c,
+		},
 		name:        name,
 		childs:      []ObjectInterface{},
 		sceneBounds: bounds,
@@ -68,10 +68,10 @@ func (obj *Object) CanMove(x, y float32) bool {
 	obj.RLock()
 	defer obj.RUnlock()
 
-	newX := obj.X + x
-	newMaxX := newX + obj.Width
-	newY := obj.Y + y
-	newMaxY := newY + obj.Height
+	newX := obj.SpaceComponent.Position.X + x
+	newMaxX := newX + obj.SpaceComponent.Width
+	newY := obj.SpaceComponent.Position.Y + y
+	newMaxY := newY + obj.SpaceComponent.Height
 	return newMaxX <= obj.sceneBounds.X+obj.sceneBounds.Width &&
 		newX >= obj.sceneBounds.X &&
 		newMaxY <= obj.sceneBounds.Y+obj.sceneBounds.Height &&
@@ -83,8 +83,8 @@ func (obj *Object) MoveBy(x, y float32) {
 		panic(obj.name + " goes out of bounds")
 	}
 	obj.Lock()
-	obj.X += x
-	obj.Y += y
+	obj.SpaceComponent.Position.X += x
+	obj.SpaceComponent.Position.Y += y
 	obj.Unlock()
 }
 
@@ -140,11 +140,25 @@ func (obj *Object) SetParent(p ObjectInterface) {
 	obj.parent = p
 }
 
-func (obj *Object) GetRect() Rect {
+func (obj *Object) GetBasicEntity() *ecs.BasicEntity {
 	obj.RLock()
 	defer obj.RUnlock()
 
-	return obj.Rect
+	return &obj.BasicEntity
+}
+
+func (obj *Object) GetSpaceComponent() *common.SpaceComponent {
+	obj.RLock()
+	defer obj.RUnlock()
+
+	return &obj.SpaceComponent
+}
+
+func (obj *Object) GetRenderComponent() *common.RenderComponent {
+	obj.RLock()
+	defer obj.RUnlock()
+
+	return &obj.RenderComponent
 }
 
 func (obj *Object) GetName() string {
@@ -152,13 +166,6 @@ func (obj *Object) GetName() string {
 	defer obj.RUnlock()
 
 	return obj.name
-}
-
-func (obj *Object) GetColor() Color {
-	obj.RLock()
-	defer obj.RUnlock()
-
-	return obj.Color
 }
 
 func (obj *Object) CollisionCallback(other ObjectInterface) bool {
@@ -171,7 +178,7 @@ func (obj *Object) String() string {
 	obj.RLock()
 	defer obj.RUnlock()
 
-	return fmt.Sprintf("%s: %+v", obj.name, obj.Rect)
+	return fmt.Sprintf("%s: %+v", obj.name, obj.RenderComponent)
 }
 
 type ByName []ObjectInterface

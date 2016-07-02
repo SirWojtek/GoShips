@@ -62,6 +62,19 @@ func (game *Game) Setup(world *ecs.World) {
 
 	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(system.NewCollisionSystem(&game.scene))
+
+	for _, system := range world.Systems() {
+		switch sys := system.(type) {
+		case *common.RenderSystem:
+			addSceneToRenderComponent(sys, &game.scene)
+		}
+	}
+}
+
+func addSceneToRenderComponent(sys *common.RenderSystem, scene *objects.Scene) {
+	for _, obj := range scene.GetChildsRecursive() {
+		sys.Add(obj.GetBasicEntity(), obj.GetRenderComponent(), obj.GetSpaceComponent())
+	}
 }
 
 func (game *Game) Start() {

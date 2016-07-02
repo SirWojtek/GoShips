@@ -2,6 +2,7 @@ package objects
 
 import (
 	"github.com/SirWojtek/GoShips/utilities"
+	"image/color"
 	"time"
 )
 
@@ -17,7 +18,7 @@ const shipHealth = 100
 const ShipMovementStep = 1.2
 const shipShootPeriod = 500 // ms
 
-func NewShip(name string, position Rect, color Color, sceneBounds Rect, isTurnedRight bool) *Ship {
+func NewShip(name string, position Rect, color color.Gray16, sceneBounds Rect, isTurnedRight bool) *Ship {
 	return &Ship{
 		Object:        NewObject(name, position, color, sceneBounds),
 		Health:        shipHealth,
@@ -41,9 +42,11 @@ func (ship *Ship) resetShoot() {
 
 func (ship *Ship) getMissileCoords() (float32, float32) {
 	if ship.IsTurnedRight {
-		return ship.Rect.X + ship.Rect.Width, ship.Rect.Y + ship.Rect.Height/2
+		return ship.SpaceComponent.Position.X + ship.SpaceComponent.Width,
+			ship.SpaceComponent.Position.Y + ship.SpaceComponent.Height/2
 	} else {
-		return ship.Rect.X - ship.Rect.Width, ship.Rect.Y + ship.Rect.Height/2
+		return ship.SpaceComponent.Position.X - ship.SpaceComponent.Width,
+			ship.SpaceComponent.Position.Y + ship.SpaceComponent.Height/2
 	}
 }
 

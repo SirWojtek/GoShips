@@ -2,6 +2,7 @@ package objects
 
 import (
 	"fmt"
+	"image/color"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ const MissileMovementStep = .005
 func NewMissile(x, y float32, sceneBounds Rect) *Missile {
 	number++
 	return &Missile{
-		Object: NewObject(fmt.Sprintf("%s%d", missilePrefix, number), Rect{x, y, 1, 1}, White, sceneBounds),
+		Object: NewObject(fmt.Sprintf("%s%d", missilePrefix, number), Rect{x, y, 1, 1}, color.White, sceneBounds),
 	}
 }
 

@@ -2,6 +2,7 @@ package system
 
 import (
 	"engo.io/ecs"
+	"engo.io/engo/common"
 	"github.com/SirWojtek/GoShips/objects"
 )
 
@@ -22,7 +23,7 @@ func (controller *CollisionSystem) Update(dt float32) {
 
 	for i := 0; i < len(allObj); i++ {
 		for j := i; j < len(allObj); j++ {
-			if areRectsCollide(allObj[i].GetRect(), allObj[j].GetRect()) {
+			if areRectsCollide(allObj[i].GetSpaceComponent(), allObj[j].GetSpaceComponent()) {
 				allObj[i].CollisionCallback(allObj[j])
 				allObj[j].CollisionCallback(allObj[i])
 			}
@@ -30,16 +31,16 @@ func (controller *CollisionSystem) Update(dt float32) {
 	}
 }
 
-func areRectsCollide(a, b objects.Rect) bool {
+func areRectsCollide(a, b *common.SpaceComponent) bool {
 	aMaxX, aMaxY := getMaxRectCoords(a)
 	bMaxX, bMaxY := getMaxRectCoords(b)
-	return (isBetween(b.X, a.X, aMaxX) && isBetween(b.Y, a.Y, aMaxY)) ||
-		(isBetween(bMaxX, a.X, aMaxX) && isBetween(bMaxY, a.Y, aMaxY))
+	return (isBetween(b.Position.X, a.Position.X, aMaxX) && isBetween(b.Position.Y, a.Position.Y, aMaxY)) ||
+		(isBetween(bMaxX, a.Position.X, aMaxX) && isBetween(bMaxY, a.Position.Y, aMaxY))
 }
 
-func getMaxRectCoords(r objects.Rect) (float32, float32) {
-	rMaxX := r.X + r.Width
-	rMaxY := r.Y + r.Height
+func getMaxRectCoords(r *common.SpaceComponent) (float32, float32) {
+	rMaxX := r.Position.X + r.Width
+	rMaxY := r.Position.Y + r.Height
 	return rMaxX, rMaxY
 }
 
