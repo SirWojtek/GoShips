@@ -1,20 +1,23 @@
 package system
 
 import (
+	"engo.io/ecs"
 	"github.com/SirWojtek/GoShips/objects"
 )
 
-type CollisionController struct {
+type CollisionSystem struct {
 	scene objects.ObjectInterface
 }
 
-func NewCollisionController(scene objects.ObjectInterface) *CollisionController {
-	return &CollisionController{
+func NewCollisionSystem(scene objects.ObjectInterface) *CollisionSystem {
+	return &CollisionSystem{
 		scene: scene,
 	}
 }
 
-func (controller *CollisionController) Tick() {
+func (system *CollisionSystem) Remove(ecs.BasicEntity) {}
+
+func (controller *CollisionSystem) Update(dt float32) {
 	allObj := controller.scene.GetChildsRecursive()
 
 	for i := 0; i < len(allObj); i++ {
