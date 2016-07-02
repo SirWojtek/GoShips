@@ -20,10 +20,8 @@ type Game struct {
 	engoOpts    engo.RunOptions
 }
 
-const logFile = "log.txt"
-
 func NewGame() Game {
-	utilities.Init(logFile)
+	utilities.Init()
 	game := Game{
 		scene: objects.NewScene(),
 		//shipControllers:      []controller.RandomController{},
