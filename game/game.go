@@ -79,27 +79,4 @@ func addSceneToRenderComponent(sys *common.RenderSystem, scene *objects.Scene) {
 
 func (game *Game) Start() {
 	engo.Run(game.engoOpts, game)
-
-	//var waitGroup sync.WaitGroup
-	//threads := NewThreads()
-
-	//waitGroup.Add(1)
-	//go threads.paintLoop(
-	//game.prePaintControllers,
-	//game.viewContext,
-	//game.postPaintControllers,
-	//&waitGroup,
-	//game.exitChannel)
-
-	//for i := range game.shipControllers {
-	//waitGroup.Add(1)
-	//go threads.controllLoop(
-	//&game.shipControllers[i],
-	//&waitGroup,
-	//game.exitChannel)
-	//}
-
-	//utilities.Log.Println("Threads started")
-	//waitGroup.Wait()
-	//utilities.Log.Println("Threads stoped")
 }
