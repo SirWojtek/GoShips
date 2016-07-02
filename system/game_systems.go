@@ -1,4 +1,4 @@
-package controller
+package system
 
 import (
 	"github.com/SirWojtek/GoShips/objects"
