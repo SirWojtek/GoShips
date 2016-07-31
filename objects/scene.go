@@ -7,18 +7,15 @@ type Scene struct {
 	Ships []*Ship
 }
 
-const sceneWidth = 100
-const sceneHeight = 100
-
 var (
-	Red  = color.Gray16{0xf00f}
-	Blue = color.Gray16{0x00ff}
+	Red  = color.Gray16{0xff0f}
+	Blue = color.Gray16{0xf00f}
 )
 
-func NewScene() Scene {
+func NewScene(sceneWidth, sceneHeight float32) Scene {
 	sceneBounds := Rect{0, 0, sceneHeight, sceneWidth}
-	leftShip := NewShip("LeftShip", Rect{0, 30, 5, 5}, Red, sceneBounds, true)
-	rightShip := NewShip("RightShip", Rect{90, 30, 5, 5}, Blue, sceneBounds, false)
+	leftShip := NewShip("LeftShip", Rect{0, sceneHeight / 2, 15, 20}, Red, sceneBounds, true)
+	rightShip := NewShip("RightShip", Rect{sceneWidth - 15, sceneHeight / 2, 15, 20}, Blue, sceneBounds, false)
 
 	scene := Scene{
 		Object: NewObject("Scene", sceneBounds, color.Black, sceneBounds),

@@ -20,18 +20,21 @@ type Game struct {
 	engoOpts    engo.RunOptions
 }
 
+const sceneWidth = 800
+const sceneHeight = 600
+
 func NewGame() Game {
 	utilities.Init()
 	game := Game{
-		scene: objects.NewScene(),
+		scene: objects.NewScene(sceneWidth, sceneHeight),
 		//shipControllers:      []controller.RandomController{},
 		//prePaintControllers:  []controller.Controller{},
 		//postPaintControllers: []controller.Controller{},
 		exitChannel: utilities.NewBroadcastChannel(),
 		engoOpts: engo.RunOptions{
 			Title:  "GoShips",
-			Width:  800,
-			Height: 600,
+			Width:  sceneWidth,
+			Height: sceneHeight,
 		},
 	}
 	//game.viewContext = view.NewViewContext(&game.scene)
@@ -58,7 +61,7 @@ func NewGame() Game {
 func (*Game) Type() string { return "GoShips" }
 func (*Game) Preload()     {}
 func (game *Game) Setup(world *ecs.World) {
-	common.SetBackground(color.White)
+	common.SetBackground(color.Black)
 
 	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(system.NewCollisionSystem(&game.scene))
