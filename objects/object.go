@@ -39,13 +39,14 @@ type Object struct {
 	ecs.BasicEntity
 	common.SpaceComponent
 	common.RenderComponent
-	name        string
-	childs      []ObjectInterface
-	parent      ObjectInterface
-	sceneBounds Rect
+	name         string
+	childs       []ObjectInterface
+	parent       ObjectInterface
+	sceneBounds  Rect
+	renderSystem *common.RenderSystem
 }
 
-func NewObject(name string, r Rect, c color.Gray16, bounds Rect) *Object {
+func NewObject(name string, r Rect, c color.Gray16, bounds Rect, renderSystem *common.RenderSystem) *Object {
 	return &Object{
 		SpaceComponent: common.SpaceComponent{
 			Position: engo.Point{r.X, r.Y},
@@ -56,9 +57,10 @@ func NewObject(name string, r Rect, c color.Gray16, bounds Rect) *Object {
 			Drawable: common.Rectangle{},
 			Color:    c,
 		},
-		name:        name,
-		childs:      []ObjectInterface{},
-		sceneBounds: bounds,
+		name:         name,
+		childs:       []ObjectInterface{},
+		sceneBounds:  bounds,
+		renderSystem: renderSystem,
 	}
 }
 
@@ -81,9 +83,11 @@ func (obj *Object) MoveBy(x, y float32) {
 	obj.SpaceComponent.Position.Y += y
 }
 
+// TODO: function should only takes necessary args, not whole interface
 func (obj *Object) AddChild(o ObjectInterface) {
 	o.SetParent(obj)
 	obj.childs = append(obj.childs, o)
+	obj.renderSystem.Add(o.GetBasicEntity(), o.GetRenderComponent(), o.GetSpaceComponent())
 }
 
 func (obj *Object) GetChilds() []ObjectInterface {
@@ -101,12 +105,15 @@ func (obj *Object) GetChildsRecursive() []ObjectInterface {
 func (obj *Object) DeleteChild(childToDelete ObjectInterface) {
 	for i, child := range obj.childs {
 		if child.GetName() == childToDelete.GetName() {
+			// FIXME: change way to delete rendered objects
+			//obj.renderSystem.Remove(*child.GetBasicEntity())
 			obj.childs = append(obj.childs[:i], obj.childs[i+1:]...)
 		}
 	}
 }
 
 func (obj *Object) Delete() {
+	//obj.renderSystem.Remove(*obj.GetBasicEntity())
 	obj.GetParent().DeleteChild(obj)
 }
 

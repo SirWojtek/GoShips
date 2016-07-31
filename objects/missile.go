@@ -1,6 +1,7 @@
 package objects
 
 import (
+	"engo.io/engo/common"
 	"fmt"
 	"image/color"
 	"strings"
@@ -14,12 +15,12 @@ var number = 0
 
 const missilePrefix = "missile"
 const missileDamage = 20
-const MissileMovementStep = .005
+const MissileMovementStep = 7
 
-func NewMissile(x, y float32, sceneBounds Rect) *Missile {
+func NewMissile(x, y float32, sceneBounds Rect, renderSystem *common.RenderSystem) *Missile {
 	number++
 	return &Missile{
-		Object: NewObject(fmt.Sprintf("%s%d", missilePrefix, number), Rect{x, y, 5, 5}, color.White, sceneBounds),
+		Object: NewObject(fmt.Sprintf("%s%d", missilePrefix, number), Rect{x, y, 5, 5}, color.White, sceneBounds, renderSystem),
 	}
 }
 

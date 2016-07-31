@@ -1,6 +1,9 @@
 package objects
 
-import "image/color"
+import (
+	"engo.io/engo/common"
+	"image/color"
+)
 
 type Scene struct {
 	*Object
@@ -12,13 +15,13 @@ var (
 	Blue = color.Gray16{0xf00f}
 )
 
-func NewScene(sceneWidth, sceneHeight float32) Scene {
+func NewScene(sceneWidth, sceneHeight float32, renderSystem *common.RenderSystem) Scene {
 	sceneBounds := Rect{0, 0, sceneWidth, sceneHeight}
-	leftShip := NewShip("LeftShip", Rect{5, sceneHeight / 2, 15, 20}, Red, sceneBounds, true)
-	rightShip := NewShip("RightShip", Rect{sceneWidth - 20, sceneHeight / 2, 15, 20}, Blue, sceneBounds, false)
+	leftShip := NewShip("LeftShip", Rect{5, sceneHeight / 2, 15, 20}, Red, sceneBounds, renderSystem, true)
+	rightShip := NewShip("RightShip", Rect{sceneWidth - 20, sceneHeight / 2, 15, 20}, Blue, sceneBounds, renderSystem, false)
 
 	scene := Scene{
-		Object: NewObject("Scene", sceneBounds, color.Black, sceneBounds),
+		Object: NewObject("Scene", sceneBounds, color.Black, sceneBounds, renderSystem),
 		Ships:  []*Ship{leftShip, rightShip},
 	}
 

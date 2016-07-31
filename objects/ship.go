@@ -1,6 +1,7 @@
 package objects
 
 import (
+	"engo.io/engo/common"
 	"github.com/SirWojtek/GoShips/utilities"
 	"image/color"
 	"time"
@@ -18,9 +19,9 @@ const shipHealth = 100
 const ShipMovementStep = 20
 const shipShootPeriod = 500 // ms
 
-func NewShip(name string, position Rect, color color.Gray16, sceneBounds Rect, isTurnedRight bool) *Ship {
+func NewShip(name string, position Rect, color color.Gray16, sceneBounds Rect, renderSystem *common.RenderSystem, isTurnedRight bool) *Ship {
 	return &Ship{
-		Object:        NewObject(name, position, color, sceneBounds),
+		Object:        NewObject(name, position, color, sceneBounds, renderSystem),
 		Health:        shipHealth,
 		IsTurnedRight: isTurnedRight,
 		canShoot:      true,
@@ -30,7 +31,7 @@ func NewShip(name string, position Rect, color color.Gray16, sceneBounds Rect, i
 func (ship *Ship) Shoot() {
 	if ship.canShoot {
 		x, y := ship.getMissileCoords()
-		ship.AddChild(NewMissile(x, y, ship.sceneBounds))
+		ship.AddChild(NewMissile(x, y, ship.sceneBounds, ship.renderSystem))
 		ship.canShoot = false
 		ship.shootTimer = time.AfterFunc(shipShootPeriod*time.Millisecond, ship.resetShoot)
 	}
