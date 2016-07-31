@@ -7,7 +7,6 @@ import (
 	"engo.io/engo/common"
 	"fmt"
 	"image/color"
-	"sync"
 )
 
 type Rect struct {
@@ -40,7 +39,6 @@ type Object struct {
 	ecs.BasicEntity
 	common.SpaceComponent
 	common.RenderComponent
-	sync.RWMutex
 	name        string
 	childs      []ObjectInterface
 	parent      ObjectInterface
@@ -65,9 +63,6 @@ func NewObject(name string, r Rect, c color.Gray16, bounds Rect) *Object {
 }
 
 func (obj *Object) CanMove(x, y float32) bool {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	newX := obj.SpaceComponent.Position.X + x
 	newMaxX := newX + obj.SpaceComponent.Width
 	newY := obj.SpaceComponent.Position.Y + y
@@ -82,31 +77,20 @@ func (obj *Object) MoveBy(x, y float32) {
 	if !obj.CanMove(x, y) {
 		panic(obj.name + " goes out of bounds")
 	}
-	obj.Lock()
 	obj.SpaceComponent.Position.X += x
 	obj.SpaceComponent.Position.Y += y
-	obj.Unlock()
 }
 
 func (obj *Object) AddChild(o ObjectInterface) {
-	obj.Lock()
-	defer obj.Unlock()
-
 	o.SetParent(obj)
 	obj.childs = append(obj.childs, o)
 }
 
 func (obj *Object) GetChilds() []ObjectInterface {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	return obj.childs
 }
 
 func (obj *Object) GetChildsRecursive() []ObjectInterface {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	result := obj.childs
 	for _, child := range obj.childs {
 		result = append(result, child.GetChildsRecursive()...)
@@ -127,57 +111,34 @@ func (obj *Object) Delete() {
 }
 
 func (obj *Object) GetParent() ObjectInterface {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	return obj.parent
 }
 
 func (obj *Object) SetParent(p ObjectInterface) {
-	obj.Lock()
-	defer obj.Unlock()
-
 	obj.parent = p
 }
 
 func (obj *Object) GetBasicEntity() *ecs.BasicEntity {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	return &obj.BasicEntity
 }
 
 func (obj *Object) GetSpaceComponent() *common.SpaceComponent {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	return &obj.SpaceComponent
 }
 
 func (obj *Object) GetRenderComponent() *common.RenderComponent {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	return &obj.RenderComponent
 }
 
 func (obj *Object) GetName() string {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	return obj.name
 }
 
 func (obj *Object) CollisionCallback(other ObjectInterface) bool {
-	obj.RLock()
-	defer obj.RUnlock()
 	return true
 }
 
 func (obj *Object) String() string {
-	obj.RLock()
-	defer obj.RUnlock()
-
 	return fmt.Sprintf("%s: %+v", obj.name, obj.RenderComponent)
 }
 

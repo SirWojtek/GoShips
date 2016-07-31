@@ -13,9 +13,9 @@ var (
 )
 
 func NewScene(sceneWidth, sceneHeight float32) Scene {
-	sceneBounds := Rect{0, 0, sceneHeight, sceneWidth}
-	leftShip := NewShip("LeftShip", Rect{0, sceneHeight / 2, 15, 20}, Red, sceneBounds, true)
-	rightShip := NewShip("RightShip", Rect{sceneWidth - 15, sceneHeight / 2, 15, 20}, Blue, sceneBounds, false)
+	sceneBounds := Rect{0, 0, sceneWidth, sceneHeight}
+	leftShip := NewShip("LeftShip", Rect{5, sceneHeight / 2, 15, 20}, Red, sceneBounds, true)
+	rightShip := NewShip("RightShip", Rect{sceneWidth - 20, sceneHeight / 2, 15, 20}, Blue, sceneBounds, false)
 
 	scene := Scene{
 		Object: NewObject("Scene", sceneBounds, color.Black, sceneBounds),

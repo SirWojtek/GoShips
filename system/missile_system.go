@@ -1,25 +1,24 @@
 package system
 
 import (
+	"engo.io/ecs"
 	"github.com/SirWojtek/GoShips/objects"
 )
 
-type PreGameController struct {
+type MissileSystem struct {
 	leftShip  objects.ObjectInterface
 	rightShip objects.ObjectInterface
 }
 
-func NewPreGameController(left, right objects.ObjectInterface) *PreGameController {
-	return &PreGameController{left, right}
+func NewMissileSystem(left, right objects.ObjectInterface) *MissileSystem {
+	return &MissileSystem{left, right}
 }
 
-func (controller *PreGameController) Tick() {
-	controller.moveMissiles()
-}
+func (system *MissileSystem) Remove(ecs.BasicEntity) {}
 
-func (controller *PreGameController) moveMissiles() {
-	moveShipMissiles(controller.leftShip, 1)
-	moveShipMissiles(controller.rightShip, -1)
+func (system *MissileSystem) Update(dt float32) {
+	moveShipMissiles(system.leftShip, 1)
+	moveShipMissiles(system.rightShip, -1)
 }
 
 func moveShipMissiles(ship objects.ObjectInterface, sign float32) {

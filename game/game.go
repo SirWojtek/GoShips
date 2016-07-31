@@ -32,9 +32,10 @@ func NewGame() Game {
 		//postPaintControllers: []controller.Controller{},
 		exitChannel: utilities.NewBroadcastChannel(),
 		engoOpts: engo.RunOptions{
-			Title:  "GoShips",
-			Width:  sceneWidth,
-			Height: sceneHeight,
+			Title:         "GoShips",
+			Width:         sceneWidth,
+			Height:        sceneHeight,
+			ScaleOnResize: true,
 		},
 	}
 	//game.viewContext = view.NewViewContext(&game.scene)
@@ -65,6 +66,8 @@ func (game *Game) Setup(world *ecs.World) {
 
 	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(system.NewCollisionSystem(&game.scene))
+	world.AddSystem(system.NewRandomSystem(game.scene.Ships[1])) // NOTE: only right ship random
+	world.AddSystem(system.NewMissileSystem(game.scene.Ships[0], game.scene.Ships[1]))
 
 	for _, system := range world.Systems() {
 		switch sys := system.(type) {

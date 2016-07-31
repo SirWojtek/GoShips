@@ -1,43 +1,53 @@
 package system
 
 import (
+	"engo.io/ecs"
 	"github.com/SirWojtek/GoShips/objects"
 	"math/rand"
 	"time"
 )
 
-type RandomController struct {
-	ship   *objects.Ship
-	random *rand.Rand
+type RandomSystem struct {
+	ship       *objects.Ship
+	random     *rand.Rand
+	sleepDelta float32
 }
 
-const sleepPeriod = 100 * time.Millisecond
+const sleepPeriod = 0.1 // seconds
 const shootModulo = 10
 
-func NewRandomController(obj *objects.Ship) RandomController {
-	return RandomController{
-		ship:   obj,
-		random: rand.New(rand.NewSource(time.Now().UnixNano())),
+func NewRandomSystem(obj *objects.Ship) *RandomSystem {
+	return &RandomSystem{
+		ship:       obj,
+		random:     rand.New(rand.NewSource(time.Now().UnixNano())),
+		sleepDelta: 0.0,
 	}
 }
 
-func (controller *RandomController) generateMoveDelta() (float32, float32) {
-	x := 2*controller.random.Float32()*objects.ShipMovementStep - objects.ShipMovementStep
-	y := 2*controller.random.Float32()*objects.ShipMovementStep - objects.ShipMovementStep
-	return x, y
+func (system *RandomSystem) Remove(ecs.BasicEntity) {}
+
+func (system *RandomSystem) Update(dt float32) {
+	system.sleepDelta += dt
+	if system.sleepDelta >= sleepPeriod {
+		system.sleepDelta = 0.0
+		system.PerformAction()
+	}
 }
 
-func (controller *RandomController) Tick() {
-	rand := controller.random.Int()
-
+func (system *RandomSystem) PerformAction() {
+	rand := system.random.Int()
 	if rand%shootModulo != 0 {
-		x, y := controller.generateMoveDelta()
-		for ; !controller.ship.CanMove(x, y); x, y = controller.generateMoveDelta() {
+		x, y := system.generateMoveDelta()
+		for ; !system.ship.CanMove(x, y); x, y = system.generateMoveDelta() {
 		}
-		controller.ship.MoveBy(x, y)
+		system.ship.MoveBy(x, y)
 	} else {
-		controller.ship.Shoot()
+		system.ship.Shoot()
 	}
+}
 
-	time.Sleep(sleepPeriod)
+func (system *RandomSystem) generateMoveDelta() (float32, float32) {
+	x := 2*system.random.Float32()*objects.ShipMovementStep - objects.ShipMovementStep
+	y := 2*system.random.Float32()*objects.ShipMovementStep - objects.ShipMovementStep
+	return x, y
 }

@@ -15,7 +15,7 @@ type Ship struct {
 }
 
 const shipHealth = 100
-const ShipMovementStep = 1.2
+const ShipMovementStep = 20
 const shipShootPeriod = 500 // ms
 
 func NewShip(name string, position Rect, color color.Gray16, sceneBounds Rect, isTurnedRight bool) *Ship {
@@ -51,9 +51,6 @@ func (ship *Ship) getMissileCoords() (float32, float32) {
 }
 
 func (ship *Ship) CollisionCallback(other ObjectInterface) bool {
-	ship.Object.Lock()
-	defer ship.Object.Unlock()
-
 	if IsObjectMissile(other) {
 		ship.Health.GetDamage(missileDamage)
 		other.Delete()
