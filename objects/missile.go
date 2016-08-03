@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"engo.io/engo/common"
+	"engo.io/ecs"
 	"fmt"
 	"image/color"
 	"strings"
@@ -17,10 +17,10 @@ const missilePrefix = "missile"
 const missileDamage = 20
 const MissileMovementStep = 7
 
-func NewMissile(x, y float32, sceneBounds Rect, renderSystem *common.RenderSystem) *Missile {
+func NewMissile(x, y float32, sceneBounds Rect, engoWorld *ecs.World) *Missile {
 	number++
 	return &Missile{
-		Object: NewObject(fmt.Sprintf("%s%d", missilePrefix, number), Rect{x, y, 5, 5}, color.White, sceneBounds, renderSystem),
+		Object: NewObject(fmt.Sprintf("%s%d", missilePrefix, number), Rect{x, y, 5, 5}, color.White, sceneBounds, engoWorld),
 	}
 }
 

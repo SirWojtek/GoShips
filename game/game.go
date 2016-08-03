@@ -16,9 +16,8 @@ type Game struct {
 	//prePaintControllers  []controller.Controller
 	//viewContext          view.ViewContext
 	//postPaintControllers []controller.Controller
-	exitChannel  *utilities.BroadcastChannel
-	renderSystem *common.RenderSystem
-	engoOpts     engo.RunOptions
+	exitChannel *utilities.BroadcastChannel
+	engoOpts    engo.RunOptions
 }
 
 const sceneWidth = 800
@@ -27,14 +26,11 @@ const sceneHeight = 600
 func NewGame() Game {
 	utilities.Init()
 
-	renderSystem := &common.RenderSystem{}
 	game := Game{
-		scene: objects.NewScene(sceneWidth, sceneHeight, renderSystem),
 		//shipControllers:      []controller.RandomController{},
 		//prePaintControllers:  []controller.Controller{},
 		//postPaintControllers: []controller.Controller{},
-		exitChannel:  utilities.NewBroadcastChannel(),
-		renderSystem: renderSystem,
+		exitChannel: utilities.NewBroadcastChannel(),
 		engoOpts: engo.RunOptions{
 			Title:         "GoShips",
 			Width:         sceneWidth,
@@ -66,9 +62,10 @@ func NewGame() Game {
 func (*Game) Type() string { return "GoShips" }
 func (*Game) Preload()     {}
 func (game *Game) Setup(world *ecs.World) {
+	game.scene = objects.NewScene(sceneWidth, sceneHeight, world)
 	common.SetBackground(color.Black)
 
-	world.AddSystem(game.renderSystem)
+	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(system.NewCollisionSystem(&game.scene))
 	world.AddSystem(system.NewRandomSystem(game.scene.Ships[1])) // NOTE: only right ship random
 	world.AddSystem(system.NewMissileSystem(game.scene.Ships[0], game.scene.Ships[1]))

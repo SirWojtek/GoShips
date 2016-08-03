@@ -1,11 +1,11 @@
 package objects
 
 import (
-	//"github.com/SirWojtek/GoShips/utilities"
 	"engo.io/ecs"
 	"engo.io/engo"
 	"engo.io/engo/common"
 	"fmt"
+	"github.com/SirWojtek/GoShips/utilities"
 	"image/color"
 )
 
@@ -39,14 +39,14 @@ type Object struct {
 	ecs.BasicEntity
 	common.SpaceComponent
 	common.RenderComponent
-	name         string
-	childs       []ObjectInterface
-	parent       ObjectInterface
-	sceneBounds  Rect
-	renderSystem *common.RenderSystem
+	name        string
+	childs      []ObjectInterface
+	parent      ObjectInterface
+	sceneBounds Rect
+	engoWorld   *ecs.World
 }
 
-func NewObject(name string, r Rect, c color.Gray16, bounds Rect, renderSystem *common.RenderSystem) *Object {
+func NewObject(name string, r Rect, c color.Gray16, bounds Rect, engoWorld *ecs.World) *Object {
 	return &Object{
 		SpaceComponent: common.SpaceComponent{
 			Position: engo.Point{r.X, r.Y},
@@ -57,10 +57,10 @@ func NewObject(name string, r Rect, c color.Gray16, bounds Rect, renderSystem *c
 			Drawable: common.Rectangle{},
 			Color:    c,
 		},
-		name:         name,
-		childs:       []ObjectInterface{},
-		sceneBounds:  bounds,
-		renderSystem: renderSystem,
+		name:        name,
+		childs:      []ObjectInterface{},
+		sceneBounds: bounds,
+		engoWorld:   engoWorld,
 	}
 }
 
@@ -87,7 +87,16 @@ func (obj *Object) MoveBy(x, y float32) {
 func (obj *Object) AddChild(o ObjectInterface) {
 	o.SetParent(obj)
 	obj.childs = append(obj.childs, o)
-	obj.renderSystem.Add(o.GetBasicEntity(), o.GetRenderComponent(), o.GetSpaceComponent())
+	obj.addToWorld(o)
+}
+
+func (obj *Object) addToWorld(o ObjectInterface) {
+	for _, system := range obj.engoWorld.Systems() {
+		switch sys := system.(type) {
+		case *common.RenderSystem:
+			sys.Add(o.GetBasicEntity(), o.GetRenderComponent(), o.GetSpaceComponent())
+		}
+	}
 }
 
 func (obj *Object) GetChilds() []ObjectInterface {
@@ -105,15 +114,14 @@ func (obj *Object) GetChildsRecursive() []ObjectInterface {
 func (obj *Object) DeleteChild(childToDelete ObjectInterface) {
 	for i, child := range obj.childs {
 		if child.GetName() == childToDelete.GetName() {
-			// FIXME: change way to delete rendered objects
-			//obj.renderSystem.Remove(*child.GetBasicEntity())
+			utilities.Log.Println("Removing object: ", child)
+			obj.engoWorld.RemoveEntity(*child.GetBasicEntity())
 			obj.childs = append(obj.childs[:i], obj.childs[i+1:]...)
 		}
 	}
 }
 
 func (obj *Object) Delete() {
-	//obj.renderSystem.Remove(*obj.GetBasicEntity())
 	obj.GetParent().DeleteChild(obj)
 }
 

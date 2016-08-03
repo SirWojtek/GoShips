@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"engo.io/engo/common"
+	"engo.io/ecs"
 	"image/color"
 )
 
@@ -15,13 +15,13 @@ var (
 	Blue = color.Gray16{0xf00f}
 )
 
-func NewScene(sceneWidth, sceneHeight float32, renderSystem *common.RenderSystem) Scene {
+func NewScene(sceneWidth, sceneHeight float32, engoWorld *ecs.World) Scene {
 	sceneBounds := Rect{0, 0, sceneWidth, sceneHeight}
-	leftShip := NewShip("LeftShip", Rect{5, sceneHeight / 2, 15, 20}, Red, sceneBounds, renderSystem, true)
-	rightShip := NewShip("RightShip", Rect{sceneWidth - 20, sceneHeight / 2, 15, 20}, Blue, sceneBounds, renderSystem, false)
+	leftShip := NewShip("LeftShip", Rect{5, sceneHeight / 2, 15, 20}, Red, sceneBounds, engoWorld, true)
+	rightShip := NewShip("RightShip", Rect{sceneWidth - 20, sceneHeight / 2, 15, 20}, Blue, sceneBounds, engoWorld, false)
 
 	scene := Scene{
-		Object: NewObject("Scene", sceneBounds, color.Black, sceneBounds, renderSystem),
+		Object: NewObject("Scene", sceneBounds, color.Black, sceneBounds, engoWorld),
 		Ships:  []*Ship{leftShip, rightShip},
 	}
 
