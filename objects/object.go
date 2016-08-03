@@ -5,7 +5,7 @@ import (
 	"engo.io/engo"
 	"engo.io/engo/common"
 	"fmt"
-	"github.com/SirWojtek/GoShips/utilities"
+	//"github.com/SirWojtek/GoShips/utilities"
 	"image/color"
 )
 
@@ -48,6 +48,7 @@ type Object struct {
 
 func NewObject(name string, r Rect, c color.Gray16, bounds Rect, engoWorld *ecs.World) *Object {
 	return &Object{
+		BasicEntity: ecs.NewBasic(),
 		SpaceComponent: common.SpaceComponent{
 			Position: engo.Point{r.X, r.Y},
 			Width:    r.Width,
@@ -114,7 +115,6 @@ func (obj *Object) GetChildsRecursive() []ObjectInterface {
 func (obj *Object) DeleteChild(childToDelete ObjectInterface) {
 	for i, child := range obj.childs {
 		if child.GetName() == childToDelete.GetName() {
-			utilities.Log.Println("Removing object: ", child)
 			obj.engoWorld.RemoveEntity(*child.GetBasicEntity())
 			obj.childs = append(obj.childs[:i], obj.childs[i+1:]...)
 		}
