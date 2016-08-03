@@ -84,7 +84,6 @@ func (obj *Object) MoveBy(x, y float32) {
 	obj.SpaceComponent.Position.Y += y
 }
 
-// TODO: function should only takes necessary args, not whole interface
 func (obj *Object) AddChild(o ObjectInterface) {
 	o.SetParent(obj)
 	obj.childs = append(obj.childs, o)
